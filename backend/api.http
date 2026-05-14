@@ -1,0 +1,57 @@
+POST http://localhost:9090/register
+Content-Type: application/json
+
+{
+  "username": "sujan_dai",
+  "password": "456732",
+  "email": "sujan.dai@example.com",
+  "name": "SujanDai"
+}
+
+###
+POST http://localhost:9090/login
+Content-Type: application/json
+
+{
+  "password": "456732",
+  "email": "sujan.dai@example.com"
+}
+
+###
+
+GET http://localhost:9090/get_user_and_profile
+Content-Type: application/json
+
+
+{
+  "token":    "e07abfeaf1f76881eb99119bcbd45cf8b8b4a30307ac8d2e2a4a1aba49ef30c3"
+}
+
+###
+ POST http://localhost:9090/update_profile_data
+Content-Type: application/json
+
+{
+  "token":    "e07abfeaf1f76881eb99119bcbd45cf8b8b4a30307ac8d2e2a4a1aba49ef30c3",
+  "bio": "Software developer with 5 years of experience in web development.",
+  "currentPost": "Senior Software Engineer at Tech Company",
+  "pastWork": [
+    {
+      "company": "Tech Company",
+      "position": "Software Engineer",
+      "duration": "2018-2023"
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Technology",
+      "degree": "Bachelor's in Computer Science",
+      "duration": "2014-2018"
+    }
+  ]
+}
+
+
+###
+GET http://localhost:9090/user/get_all_users
+Content-Type: application/json
