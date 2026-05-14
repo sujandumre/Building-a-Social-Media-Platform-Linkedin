@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from 'next/router'
-import { useDispatch } from 'react-redux';
 import { getAllPosts } from '@/redux/action/postAction';
 import { getAboutUser } from '@/redux/action/authAction';
 
@@ -10,6 +9,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   const dispatch = useDispatch();
+  const authState = useSelector((state) => state.auth)
 
   const [isTokenThere, setIsTokenThere] = useState(false);
 

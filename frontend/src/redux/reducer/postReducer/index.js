@@ -1,46 +1,97 @@
-import { getAllPosts } from "@/redux/action/postAction"
-import  { createSlice } from "@reduxjs/toolkit"
+// import { getAllPosts } from "@/redux/action/postAction"
+// import  { createSlice } from "@reduxjs/toolkit"
+
+// const initialState = {
+//   post:[],
+//   isError:false,
+//   postFetched: false,
+//   isLoading: false,
+//   loggedIn: false,
+//   message: "",
+//   comments: [],
+//   postId:""
+// }
+
+
+// const postSlice = createSlice({
+//   name:"post",
+//   initialState,
+//   reducers: {
+//     reset :()=> initialState,
+//     resetPostId:(state) => {
+//       state.postId = ""
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//     .addcase(getAllPosts.pending, (state) =>{
+//       state.isLoading = true
+//       state.message = "fetching all the posts...."
+//     })
+
+//     .addcase(getAllPosts.fulfilled, (state,action) =>{
+//       state.isLoading = false;
+//       state.isError = false;
+//       state.postFetched = true;
+//       state.posts = action.payload.posts
+//     })
+//     .addcase(getAllPosts.rejected, (state, action)=>{
+//       state.isLoading = false;
+//       state.isError = true;
+//       state.message = action.payload
+//     })
+//   }
+// })
+
+// export default postSlice.reducers;
+
+import { createSlice } from "@reduxjs/toolkit";
+import { getAllPosts } from "@/redux/action/postAction";
 
 const initialState = {
-  post:[],
-  isError:false,
+  posts: [], // FIXED (consistent naming)
+  isError: false,
   postFetched: false,
   isLoading: false,
-  loggedIn: false,
   message: "",
   comments: [],
-  postId:""
-}
-
+  postId: "",
+};
 
 const postSlice = createSlice({
-  name:"post",
+  name: "post",
   initialState,
+
   reducers: {
-    reset :()=> initialState,
-    resetPostId:(state) => {
-      state.postId = ""
+    reset: () => initialState,
+
+    resetPostId: (state) => {
+      state.postId = "";
     },
   },
+
   extraReducers: (builder) => {
     builder
-    .addcase(getAllPosts.pending, (state) =>{
-      state.isLoading = true
-      state.message = "fetching all the posts...."
-    })
+      .addCase(getAllPosts.pending, (state) => {
+        state.isLoading = true;
+        state.message = "Fetching all posts...";
+      })
 
-    .addcase(getAllPosts.fulfilled, (state,action) =>{
-      state.isLoading = false;
-      state.isError = false;
-      state.postFetched = true;
-      state.posts = action.payload.posts
-    })
-    .addcase(getAllPosts.rejected, (state, action)=>{
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload
-    })
-  }
-})
+      .addCase(getAllPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.postFetched = true;
 
-export default postSlice.reducers;
+        state.posts = action.payload.posts; // FIXED
+      })
+
+      .addCase(getAllPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message =
+          action.payload || "Failed to fetch posts";
+      });
+  },
+});
+
+export default postSlice.reducer;
