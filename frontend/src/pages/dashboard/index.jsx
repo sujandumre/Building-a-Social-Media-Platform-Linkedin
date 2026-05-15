@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from 'next/router'
 import { getAllPosts } from '@/redux/action/postAction';
 import { getAboutUser } from '@/redux/action/authAction';
+import UserLayout from '@/layout/UserLayout';
 
 export default function Dashboard() {
 
@@ -31,7 +32,22 @@ export default function Dashboard() {
   }, [isTokenThere])
 
 
+  // return (
+  //   <div>
+  //     {authState.profileFetched &&  <div>
+
+  //       hey {authState.user.userId.name}
+  //   </div>}
+  //   </div>
+  // )
+
   return (
-    <div>Dashboard</div>
-  )
+  <UserLayout>
+    {authState.profileFetched && authState.user?.userId && (
+      <div>
+        hey {authState.user.userId.name}
+      </div>
+    )}
+  </UserLayout>
+);
 }

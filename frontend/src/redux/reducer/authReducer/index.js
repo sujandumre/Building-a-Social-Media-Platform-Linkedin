@@ -76,7 +76,7 @@
 
 
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, registerUser } from "../../action/authAction";
+import { getAboutUser, loginUser, registerUser } from "../../action/authAction";
 
 const initialState = {
   user: [],
@@ -172,9 +172,17 @@ const authSlice = createSlice({
         state.message =
           action.payload?.message ||
           "Registration Failed";
-      });
+      })
+      .addCase(getAboutUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.profileFetched = true;
+        state.user = action.payload
+      })
   },
 });
+
+
 
 export const { reset, emptyMessage } =
   authSlice.actions;

@@ -35,6 +35,8 @@ router.post("/post", upload.single("media"), (req, res, next) => {
   next(); // pass to controller
 }, createPost);
 
+
+
 // Get posts
 router.get("/post", getAllPosts);
 // router.route("/posts").get(getAllPosts);

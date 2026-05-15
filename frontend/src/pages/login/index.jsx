@@ -185,27 +185,38 @@ function LoginComponent() {
   // REGISTER
   // ----------------------------
   const handleRegister = () => {
-    dispatch(
-      registerUser({
-        username,
-        password,
-        email,
-        name,
-      })
-    );
-  };
+  console.log({
+    username,
+    name,
+    email,
+    password,
+  });
+
+  dispatch(
+    registerUser({
+      username,
+      password,
+      email,
+      name,
+    })
+  );
+};
 
   // ----------------------------
   // LOGIN
   // ----------------------------
-  const handleLogin = () => {
-    dispatch(
-      loginUser({
-        email,
-        password,
-      })
-    );
-  };
+  const handleLogin = async () => {
+  if (!email || !password) {
+    return alert("All fields are required");
+  }
+
+  dispatch(
+    loginUser({
+      email,
+      password,
+    })
+  );
+};
 
   return (
     <UserLayout>

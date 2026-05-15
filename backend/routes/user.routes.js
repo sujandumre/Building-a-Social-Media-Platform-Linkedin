@@ -2,10 +2,12 @@ import { Router } from "express";
 import { login, register } from "../controllers/user.controller.js";
 import multer from "multer";
 import jwt from "jsonwebtoken";
-import { uploadProfilePicture,updateUserprofile,getUserAndProfile,updateProfileData,getAllUserProfile ,downloadProfile, acceptConnectionRequest, whatAreMyConnections, getMyConnectionRequests, sendConnectionRequest} from "../controllers/user.controller.js";
+import { uploadProfilePicture,updateUserprofile,getUserAndProfile,updateProfileData,getAllUserProfile , acceptConnectionRequest, whatAreMyConnections, getMyConnectionRequests, downloadProfile,sendConnectionRequest} from "../controllers/user.controller.js";
+
 
 const router = Router();
-
+router.post("/login", login);
+router.post("/register", register);
 
 const storage = multer.diskStorage({
   destination:(req,file,cb)=>{

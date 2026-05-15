@@ -124,16 +124,42 @@ export const loginUser = createAsyncThunk(
 // );
 
 
+// export const registerUser = createAsyncThunk(
+//   "user/register",
+//   async (user, thunkAPI) => {
+//     try {
+//       const response = await clientServer.post("/register", user);
+
+//       console.log("REGISTER RESPONSE:", response.data);
+
+//       return response.data; // VERY IMPORTANT
+//     } catch (error) {
+//       console.log("REGISTER ERROR:", error.response?.data);
+
+//       return thunkAPI.rejectWithValue(
+//         error.response?.data?.message || "Registration failed"
+//       );
+//     }
+//   }
+// );
+
 export const registerUser = createAsyncThunk(
   "user/register",
   async (user, thunkAPI) => {
     try {
+
+      console.log("SENDING USER:", user);
+
       const response = await clientServer.post("/register", user);
 
       console.log("REGISTER RESPONSE:", response.data);
 
-      return response.data; // VERY IMPORTANT
+      return response.data;
+
     } catch (error) {
+
+      console.log("FULL ERROR:", error);
+
       console.log("REGISTER ERROR:", error.response?.data);
 
       return thunkAPI.rejectWithValue(
@@ -147,27 +173,24 @@ export const registerUser = createAsyncThunk(
 // GET USER INFO
 export const getAboutUser = createAsyncThunk(
   "user/getAboutUser",
-  async (user, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      console.log(user);
+      const token = localStorage.getItem("token");
 
       const response = await clientServer.get(
         "/get_user_and_profile",
         {
-          params: {
-            token: user.token,
-          },
+          params: { token },
         }
       );
-
-      return thunkAPI.fulfillWithValue(response.data);
-
+      console.log("PROFILE RESPONSE:", response.data);
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || {
-          message: "Failed to get user",
-        }
+        error.response?.data || { message: "Failed to get user" }
       );
     }
+    
   }
+  
 );
