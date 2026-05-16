@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { setTokenIsThere,setTokenIsNotThere } from '@/redux/reducer/authReducer';
+import { setTokenIsThere, setTokenIsNotThere } from '@/redux/reducer/authReducer';
 import styles  from "./index.module.css"
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux';
@@ -73,7 +73,7 @@ export default function DashboardLayout({children}) {
       <div className="homeContainer_extraContainer">
         <h3>Top Profiles</h3>
 
-        {authState.all_profiles_fetched && authState.all_profiles.map((profile)=> {
+        {authState.all_profiles_fetched && authState.all_profiles?.map((profile)=> {
 
           return (
             <div key={profile._id} className={styles.extraContainer_profile}>

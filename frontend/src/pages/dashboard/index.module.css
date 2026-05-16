@@ -1,0 +1,94 @@
+
+.homeComponent {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.createPostContainer {
+  display: flex;
+  height:10svh;
+  width: 70%;
+  padding-inline: 0.8rem;
+  align-items: center;
+  position: relative;
+  gap: 1.3rem;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); */
+  margin-top: 1rem;
+  background: transparent;   /* instead of white */
+  box-shadow: none;  
+}
+
+.wrapper {
+  display:flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.uploadButton {
+  position:absolute;
+  right:0;
+  bottom: -30%;
+  background:#2563eb;
+  color:white;
+  border-radius: 10px;
+  padding-inline: 1.2rem;
+  padding-block: 0.3rem;
+  cursor: pointer;
+}
+
+.userProfile {
+  width: fit-content;
+  height: 60%;
+  border-radius: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.userProfile:hover {
+  transform: scale(1.05);
+}
+
+.createPostContainer > textarea {
+  width: 100%;
+}
+
+
+.Fab {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: all 0.25s ease;
+  margin-top: 8px;
+}
+
+.Fab > svg {
+  width: 20px;
+  height: 20px;
+  align-items: center;
+}
+
+
+.textAreaOfContent {
+  width:80%;
+  height: 70%;
+  border: 1px solid silver;
+  border-radius: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-inline: 1.5rem;
+  padding-block: 0.8rem;
+  outline: none;
+
+}
+
+.singleCard {
+  width:100%;
+  border-radius: 10px 10px 0px 0px;
+}
