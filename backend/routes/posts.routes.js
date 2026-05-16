@@ -7,15 +7,25 @@ import fs from "fs";
 const router = Router();
 
 // Multer storage config
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/"); // make sure this folder exists
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // make sure this folder exists
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+    cb(null, Date.now() + ".jpg"); // or original name logic
+  }
 });
 
+export const upload = multer({ storage });
 
 
 const uploadPath = "uploads/";
@@ -24,7 +34,7 @@ const uploadPath = "uploads/";
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 // Routes
 router.get("/", activeCheck);

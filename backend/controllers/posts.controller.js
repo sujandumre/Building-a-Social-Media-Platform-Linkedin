@@ -87,7 +87,9 @@ export const createPost = async (req, res) => {
     const post = new Post({
       userId: user._id,
       body: body || "",
-      media: req.file ? req.file.path : "",   // better than filename
+      // media: req.file ? req.file.path : "",   // better than filename
+      // media: req.file ? req.file.filename : "",
+      media: req.file.filename,
       fileType: req.file ? req.file.mimetype.split("/")[1] : "",
     });
 
@@ -110,6 +112,7 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req,res) =>{
   try {
     const posts = await Post.find().populate('userId', 'name username email profilePicture');
+    
     return res.json({posts});
   } catch (error) {
     return res.status(500).json({message:error.message});

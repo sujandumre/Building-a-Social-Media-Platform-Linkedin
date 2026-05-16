@@ -42,82 +42,101 @@ export default function Dashboard() {
     setPostContent("");
     setFileContent(null);
   };
-  // return (
-  //   <div>
-  //     {authState.profileFetched &&  <div>
-
-  //       hey {authState.user.userId.name}
-  //   </div>}
-  //   </div>
-  // )
 
   return (
     <UserLayout>
       <DashboardLayout>
         <div className={styles.homeComponent}>
-          
           <div className={styles.wrapper}>
+            <div className={styles.createPostContainer}>
+              <img
+                className={styles.userProfile}
+                src={`${BASE_URL}/${authState?.user?.userId?.profilePicture}`}
+                alt=""
+              />
 
-            
-          <div className={styles.createPostContainer}>
-            <img
-              className={styles.userProfile}
-              src={`${BASE_URL}/${authState?.user?.userId?.profilePicture}`}
-              alt=""
-            />
-
-            <textarea
-              onChange={(e) => setPostContent(e.target.value)}
-              value={postContent}
-              placeholder={"what's in your mind"}
-              className={styles.textAreaOfContent}
-              name=""
-              id=""
-            ></textarea>
-            <label htmlFor="fileUpload">
-              <div className={styles.Fab}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-              </div>
-            </label>
-            <input
-              onChange={(e) => setFileContent(e.target.files[0])}
-              type="file"
-              hidden
-              id="fileUpload"
-            />
-            {postContent.length > 0 && (
-              <div onClick={handleUpload} className={styles.uploadButton}>
-                Post
-              </div>
-            )}
-          </div>
-
-          <div className={styles.postsContainer}>
-            {postState.posts.map((post) => {
-              return (
-                <div key={post._id} className={styles.singleCard}>
-                  <div className={styles.singleCard_profileContainer}>
-                    <img className={styles.userProfile} src={`${BASE_URL}`} />
-                    <p>{post.userId.name}</p>
-                  </div>
+              <textarea
+                onChange={(e) => setPostContent(e.target.value)}
+                value={postContent}
+                placeholder={"what's in your mind"}
+                className={styles.textAreaOfContent}
+                name=""
+                id=""
+              ></textarea>
+              <label htmlFor="fileUpload">
+                <div className={styles.Fab}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
                 </div>
-              );
-            })}
-          </div>
-          
+              </label>
+              <input
+                onChange={(e) => setFileContent(e.target.files[0])}
+                type="file"
+                hidden
+                id="fileUpload"
+              />
+              {postContent.length > 0 && (
+                <div onClick={handleUpload} className={styles.uploadButton}>
+                  Post
+                </div>
+              )}
+            </div>
+
+            <div className={styles.postsContainer}>
+              {postState.posts.map((post) => {
+                 console.log("POST DATA:", post); 
+                return (
+                  <div key={post._id} className={styles.singleCard}>
+                    <div className={styles.singleCard_profileContainer}>
+                      {/* <img className={styles.userProfile} src={`${BASE_URL}`} /> */}
+                      <img
+                        className={styles.userProfile}
+                        src={
+                          post.userId?.profilePicture
+                            ? `${BASE_URL}/${post.userId.profilePicture}`
+                            : "/default1.png"
+                        }
+                        alt="profile"
+                      />
+                      <div>
+                        <p style={{ fontWeight: "bold" }}>{post.userId.name}</p>
+                        <p style={{ color: "gray" }}>@{post.userId.username}</p>
+                        <p style={{ paddingTop: "1.3rem"}}>{post.body}</p>
+
+
+                        <div className={styles.singleCard_image}>
+                          {/* <img src={`${BASE_URL}/${post.media}`}/> */}
+                          {/* {post.media && (
+  <img
+    className={styles.postImage}
+    src={`${BASE_URL}/${post.media.replace(/\\/g, "/")}`}
+    alt="post"
+  />
+)} */}
+
+                              <img
+  src={`http://localhost:9090/uploads/${post.media}`}
+  alt="post"
+/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </DashboardLayout>
