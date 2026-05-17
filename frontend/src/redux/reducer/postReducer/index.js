@@ -81,31 +81,31 @@ const postSlice = createSlice({
         state.isError = false;
         state.postFetched = true;
 
-        state.posts = action.payload.posts; // FIXED
+        state.posts = action.payload.posts.reverse(); // FIXED
       })
 
       .addCase(getAllPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload || "Failed to fetch posts";
-      })
-      .addCase(createPost.pending, (state) => {
-        state.isLoading = true;
-        state.message = "Creating post...";
-      })
-      .addCase(createPost.fulfilled, (state, action) => {
-        console.log("NEW POST FROM REDUX:", action.payload);
-        state.isLoading = false;
-        state.isError = false;
-
-        // IMPORTANT: add new post to UI immediately
-        state.posts.unshift(action.payload);
-      })
-      .addCase(createPost.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload || "Post creation failed";
       });
+      // .addCase(createPost.pending, (state) => {
+      //   state.isLoading = true;
+      //   state.message = "Creating post...";
+      // })
+      // .addCase(createPost.fulfilled, (state, action) => {
+      //   console.log("NEW POST FROM REDUX:", action.payload);
+      //   state.isLoading = false;
+      //   state.isError = false;
+
+      //   // IMPORTANT: add new post to UI immediately
+      //   state.posts.unshift(action.payload);
+      // })
+      // .addCase(createPost.rejected, (state, action) => {
+      //   state.isLoading = false;
+      //   state.isError = true;
+      //   state.message = action.payload || "Post creation failed";
+      // });
   },
 });
 
