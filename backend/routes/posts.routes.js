@@ -6,6 +6,10 @@ import fs from "fs";
 
 const router = Router();
 
+
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // Multer storage config
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {

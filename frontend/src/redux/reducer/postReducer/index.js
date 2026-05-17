@@ -12,7 +12,6 @@
 //   postId:""
 // }
 
-
 // const postSlice = createSlice({
 //   name:"post",
 //   initialState,
@@ -46,7 +45,7 @@
 // export default postSlice.reducers;
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllPosts } from "@/redux/action/postAction";
+import { getAllPosts, createPost } from "@/redux/action/postAction";
 
 const initialState = {
   posts: [], // FIXED (consistent naming)
@@ -88,8 +87,24 @@ const postSlice = createSlice({
       .addCase(getAllPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message =
-          action.payload || "Failed to fetch posts";
+        state.message = action.payload || "Failed to fetch posts";
+      })
+      .addCase(createPost.pending, (state) => {
+        state.isLoading = true;
+        state.message = "Creating post...";
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        console.log("NEW POST FROM REDUX:", action.payload);
+        state.isLoading = false;
+        state.isError = false;
+
+        // IMPORTANT: add new post to UI immediately
+        state.posts.unshift(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload || "Post creation failed";
       });
   },
 });

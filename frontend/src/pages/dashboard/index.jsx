@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getAllPosts } from "@/redux/action/postAction";
 import { getAboutUser } from "@/redux/action/authAction";
+// import { getAllUsers } from "@/redux/action/authAction";
 import { getAllUsers } from "@/redux/action/authAction";
 import UserLayout from "@/layout/UserLayout";
 import DashboardLayout from "@/layout/DashboardLayout";
@@ -96,7 +97,7 @@ export default function Dashboard() {
 
             <div className={styles.postsContainer}>
               {postState.posts.map((post) => {
-                 console.log("POST DATA:", post); 
+                console.log("POST DATA:", post);
                 return (
                   <div key={post._id} className={styles.singleCard}>
                     <div className={styles.singleCard_profileContainer}>
@@ -113,23 +114,17 @@ export default function Dashboard() {
                       <div>
                         <p style={{ fontWeight: "bold" }}>{post.userId.name}</p>
                         <p style={{ color: "gray" }}>@{post.userId.username}</p>
-                        <p style={{ paddingTop: "1.3rem"}}>{post.body}</p>
-
+                        <p style={{ paddingTop: "1.3rem" }}>{post.body}</p>
 
                         <div className={styles.singleCard_image}>
                           {/* <img src={`${BASE_URL}/${post.media}`}/> */}
-                          {/* {post.media && (
-  <img
-    className={styles.postImage}
-    src={`${BASE_URL}/${post.media.replace(/\\/g, "/")}`}
-    alt="post"
-  />
-)} */}
-
-                              <img
-  src={`http://localhost:9090/uploads/${post.media}`}
-  alt="post"
-/>
+                          
+                          {post.media && (
+                            <img 
+                              src={`${BASE_URL}/${post.media}`}
+                              alt="post"
+                            />
+                          )}
                         </div>
                       </div>
                     </div>

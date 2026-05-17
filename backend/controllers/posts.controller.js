@@ -71,11 +71,6 @@ export const createPost = async (req, res) => {
   try {
     const { token, body } = req.body;
 
-    // 🔍 Debug (optional but useful)
-    console.log("Token:", token);
-    console.log("Body:", body);
-    console.log("File:", req.file);
-
     // ✅ Check user
     const user = await User.findOne({ token: token });
 

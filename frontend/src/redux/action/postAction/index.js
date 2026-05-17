@@ -35,7 +35,8 @@ export const createPost = createAsyncThunk(
       });
 
       if(response.status === 200) {
-        return thunkAPI.fulfillWithValue("Post Uploaded")
+        // return thunkAPI.fulfillWithValue("Post Uploaded")
+        return thunkAPI.fulfillWithValue(response.data)
       } else {
         return thunkAPI.rejectWithValue("post not Uploaded")
       }
