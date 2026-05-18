@@ -120,3 +120,47 @@
   object-fit: cover;
   border-radius: 20px;
 }
+
+/* .optionscontainer {
+  display:flex;
+  height: 20%;
+  width: 100%;
+  justify-content: space-between;
+}
+.singleOption_optionsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.singleOption_optionsContainer > svg {
+  
+  cursor: pointer;
+  width: 8%;
+  height: 100%;
+} */
+
+.optionsContainer {
+   display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+  justify-content: space-between; /* spreads items across full width */
+  padding: 10px 40px;
+}
+
+.singleOption_optionsContainer {
+  display: inline-flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.singleOption_optionsContainer svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
