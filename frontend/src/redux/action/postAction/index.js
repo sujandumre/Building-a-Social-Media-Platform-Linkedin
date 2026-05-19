@@ -79,3 +79,33 @@ export const incrementPostLike = createAsyncThunk(
     }
   }
 )
+
+export const getAllComments = createAsyncThunk(
+  "post/getAllComments",
+  async (postData, thunkAPI) => {
+    try {
+      const post_id = postData?.post_id;
+
+      if (!post_id) {
+        throw new Error("post_id is missing");
+      }
+
+      const response = await clientServer.post("/get_comments", {
+        post_id,
+      });
+
+      return thunkAPI.fulfillWithValue({
+        comments: response.data,
+        post_id,
+      });
+
+    } catch (error) {
+      console.log("GET COMMENTS ERROR:", error);
+
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || error.message
+      );
+    }
+  }
+);
+

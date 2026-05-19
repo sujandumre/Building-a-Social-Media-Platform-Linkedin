@@ -45,7 +45,7 @@
 // export default postSlice.reducers;
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllPosts, createPost } from "@/redux/action/postAction";
+import { getAllPosts, createPost, getAllComments } from "@/redux/action/postAction";
 
 const initialState = {
   posts: [], // FIXED (consistent naming)
@@ -88,7 +88,17 @@ const postSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload || "Failed to fetch posts";
-      });
+      })
+      // .addCase(getAllComments.fulfilled, (state,action)=>{
+      //   state.postId = action.payload.post_id
+      // })
+
+      .addCase(getAllComments.fulfilled, (state, action) => {
+      state.comments = action.payload.comments.comments || [];
+      state.postId = action.payload.post_id;
+    }); 
+      
+
       // .addCase(createPost.pending, (state) => {
       //   state.isLoading = true;
       //   state.message = "Creating post...";

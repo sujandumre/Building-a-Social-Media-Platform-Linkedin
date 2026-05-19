@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { getAllPosts } from "@/redux/action/postAction";
-import { getAboutUser } from "@/redux/action/authAction";
-// import { getAllUsers } from "@/redux/action/authAction";
-import { getAllUsers } from "@/redux/action/authAction";
+import {
+  getAllComments,
+  getAllPosts,
+  createPost,
+  deletePost,
+  incrementPostLike,
+} from "@/redux/action/postAction";
+import { getAboutUser, getAllUsers } from "@/redux/action/authAction";
+// import { createComment } from "@/redux/action/postAction";
 import UserLayout from "@/layout/UserLayout";
 import DashboardLayout from "@/layout/DashboardLayout";
 import styles from "./index.module.css";
 import { BASE_URL } from "@/config";
-import { createPost, deletePost, incrementPostLike } from "@/redux/action/postAction";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -35,28 +39,43 @@ export default function Dashboard() {
   //   }
   // }, [authState.isTokenThere]);
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+
+  //   // If no token, redirect to login immediately
+  //   if (!token) {
+  //     router.push("/login");
+  //     return;
+  //   }
+
+  //   // Token exists, set it in redux and fetch data
+  //   // dispatch(setTokenIsThere());
+  //   dispatch(getAllPosts());
+  //   dispatch(getAboutUser());
+  //   dispatch(getAllComments());
+
+  //   if (!authState.all_profiles_fetched) {
+  //     dispatch(getAllUsers());
+  //   }
+  // }, []);
+
+  const [openCommentPostId, setOpenCommentPostId] = useState(null);
+  const [postContent, setPostContent] = useState("");
+  const [fileContent, setFileContent] = useState();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    // If no token, redirect to login immediately
     if (!token) {
       router.push("/login");
       return;
     }
-
-    // Token exists, set it in redux and fetch data
-    // dispatch(setTokenIsThere());
     dispatch(getAllPosts());
     dispatch(getAboutUser());
-
+    // ✅ Remove dispatch(getAllComments()) — no post_id here
     if (!authState.all_profiles_fetched) {
       dispatch(getAllUsers());
     }
   }, []);
-
-  const [postContent, setPostContent] = useState("");
-
-  const [fileContent, setFileContent] = useState();
 
   const handleUpload = async () => {
     await dispatch(createPost({ file: fileContent, body: postContent }));
@@ -187,10 +206,15 @@ export default function Dashboard() {
                         </div>
 
                         <div className={styles.optionsContainer}>
-                          <div onClick={async () => {
-                            await dispatch(incrementPostLike({ post_id: post._id}))
-                            dispatch(getAllPosts())
-                          }}className={styles.singleOption_optionsContainer}>
+                          <div
+                            onClick={async () => {
+                              await dispatch(
+                                incrementPostLike({ post_id: post._id }),
+                              );
+                              dispatch(getAllPosts());
+                            }}
+                            className={styles.singleOption_optionsContainer}
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
@@ -207,7 +231,22 @@ export default function Dashboard() {
                             </svg>
                             <p>{post.likes}</p>
                           </div>
-                          <div className={styles.singleOption_optionsContainer}>
+                          <div
+                            // onClick={()=> {
+                            //   dispatch(getAllComments({ post_id: post._id }));
+                            // }}
+                            onClick={async () => {
+                              if (openCommentPostId === post._id) {
+                                setOpenCommentPostId(null); // toggle close
+                              } else {
+                                await dispatch(
+                                  getAllComments({ post_id: post._id }),
+                                );
+                                setOpenCommentPostId(post._id); // toggle open
+                              }
+                            }}
+                            className={styles.singleOption_optionsContainer}
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
@@ -224,12 +263,15 @@ export default function Dashboard() {
                             </svg>
                             <p>{post.comment}</p>
                           </div>
-                          <div onClick={()=> {
-                            const text = encodeURIComponent(post.body)
-                            const url = encodeURIComponent("apnacollege.in");
-                            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-                            window.open(twitterUrl, "_blank")
-                          }}className={styles.singleOption_optionsContainer}>
+                          <div
+                            onClick={() => {
+                              const text = encodeURIComponent(post.body);
+                              const url = encodeURIComponent("apnacollege.in");
+                              const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+                              window.open(twitterUrl, "_blank");
+                            }}
+                            className={styles.singleOption_optionsContainer}
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
@@ -247,6 +289,35 @@ export default function Dashboard() {
                             <p>{post.share}</p>
                           </div>
                         </div>
+
+                        {openCommentPostId === post._id && (
+                          <div className={styles.commentsSection}>
+                            {postState.comments.length === 0 ? (
+                              <p>No comments yet</p>
+                            ) : (
+                              postState.comments.map((comment) => (
+                                <div
+                                  key={comment._id}
+                                  className={styles.singleComment}
+                                >
+                                  <img
+                                    src={
+                                      comment.userId?.profilePicture
+                                        ? `${BASE_URL}/uploads/${comment.userId.profilePicture}`
+                                        : "/default1.png"
+                                    }
+                                    alt="profile"
+                                  />
+                                  <p>
+                                    <strong>{comment.userId?.name}</strong>
+                                  </p>
+                                  <p>@{comment.userId?.username}</p>
+                                  <p>{comment.body}</p>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -255,6 +326,10 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        {postState.postId !== "" && (
+          <p>{postState.comments?.length || 0} comments</p>
+          
+        )}
       </DashboardLayout>
     </UserLayout>
   );

@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import Profile from "../models/profile.model.js";
 import bcrypt from "bcrypt";
 import Post from "../models/posts.model.js";
+import Comment from "../models/comments.model.js";
 
 export const activeCheck = async (req,res)=>{
   return res.status(200).json({message:"RUNNING"})
@@ -139,20 +140,46 @@ export const deletePost = async (req,res) =>{
   }
 }
 
-export const get_comments_by_post = async (req,res)=>{
-  const { post_id } = req.body;
+// export const get_comments_by_post = async (req,res)=>{
+//   // const { post_id } = req.query
+//   const post = await Post.findById(req.body.post_id);
 
+//   try {
+//     const post= await Post.findOne({_id:post_id});
+//     if(!post) {
+//       return res.status(404).json({message: "post not found"});
+//     } 
+//     return res.status(404).json({comments:post.comments});
+
+//   } catch (error) {
+//     return res.status(500).json({message:error.message});
+//   }
+// }
+
+export const get_comments_by_post = async (req, res) => {
   try {
-    const post= await Post.findOne({_id:post_id});
-    if(!post) {
-      return res.status(404).json({message: "post not found"});
-    } 
-    return res.status(404).json({comments:post.comments});
+    const { post_id } = req.body;
+
+    if (!post_id) {
+      return res.status(400).json({ message: "post_id is required" });
+    }
+
+    const comments = await Comment.find({ postId: post_id })
+      .populate("userId", "name username profilePicture");
+
+    return res.status(200).json({ comments });
 
   } catch (error) {
-    return res.status(500).json({message:error.message});
+    return res.status(500).json({ message: error.message });
   }
-}
+};
+
+
+
+
+
+
+
 
 export const delete_comment_of_user = async (req,res) =>{
   const { token,post_id,comment_id} = req.body;
