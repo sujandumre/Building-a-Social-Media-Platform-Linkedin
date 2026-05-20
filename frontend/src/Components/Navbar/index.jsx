@@ -31,8 +31,20 @@ export default function NavBarComponent() {
             <p onClick={() => {
               localStorage.removeItem("token")
               router.push("/login")
+              dispatch(logout());
               dispatch(reset());
             }} style={{fontWeight: "bold", cursor:"pointer"}}>Logout</p>
+
+            {/* <p
+  onClick={() => {
+    localStorage.removeItem("token");
+    dispatch(reset());
+    router.push("/login");
+  }}
+  style={{ fontWeight: "bold", cursor: "pointer" }}
+>
+  Logout
+</p> */}
             </div>
             
             </div>

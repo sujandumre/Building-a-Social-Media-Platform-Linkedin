@@ -192,7 +192,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isError = false;
         state.all_profiles_fetched= true;
-        state.all_users = action.payload.profile
+         state.all_users = action.payload.profiles;
       })
   },
 });

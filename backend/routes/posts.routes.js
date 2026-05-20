@@ -1,6 +1,9 @@
 import { Router } from "express";
 import express from "express";
-import { activeCheck, createPost, getAllPosts,deletePost,increment_likes, delete_comment_of_user, get_comments_by_post } from "../controllers/posts.controller.js";
+// import { activeCheck, createPost, getAllPosts,deletePost,increment_likes, delete_comment_of_user, get_comments_by_post } from "../controllers/posts.controller.js";
+
+import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment } from "../controllers/posts.controller.js";
+
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -8,6 +11,7 @@ import fs from "fs";
 
 const router = Router();
 const app = express();
+
 
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
@@ -58,6 +62,8 @@ router.get("/post", getAllPosts);
 // router.route("/posts").get(getAllPosts);
 
 router.route("/delete_post").delete(deletePost);
+
+router.route("/comments").post(create_comment);
 // router.route("/comment").post(commentPost);
 router.route("/get_comments").post(get_comments_by_post);
 router.route("/delete_comment").post(delete_comment_of_user);

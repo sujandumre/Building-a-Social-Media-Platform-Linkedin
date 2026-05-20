@@ -1,8 +1,12 @@
 import User from "../models/user.model.js";
+// import jwt from "jsonwebtoken";
 import Profile from "../models/profile.model.js";
 import bcrypt from "bcrypt";
 import Post from "../models/posts.model.js";
+
 import Comment from "../models/comments.model.js";
+
+
 
 export const activeCheck = async (req,res)=>{
   return res.status(200).json({message:"RUNNING"})
@@ -179,31 +183,60 @@ export const get_comments_by_post = async (req, res) => {
 
 
 
-
-
-export const delete_comment_of_user = async (req,res) =>{
-  const { token,post_id,comment_id} = req.body;
+export const delete_comment_of_user = async (req, res) => {
   try {
+    const { commentId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
 
-    const user = await User.findOne({ token:token}).select("_id");
-    if (!user) {
-      return res.status(404).json({message:"User not found"});
+    if (!token) return res.status(401).json({ message: "No token" });
+
+    // ✅ Find user by token (same pattern as create_comment)
+    const user = await User.findOne({ token: token });
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    // ✅ Find comment and verify ownership
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    // ✅ Only allow delete if this user owns the comment
+    if (comment.userId.toString() !== user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
 
-    const comment = await Comment.findOne({"  _id":comment_id});
-    if (!comment) {
-      return res.status(404).json({message:"Comment not found"});
-    }
-    if (comment.userId.toString() !== user._id.toString()){
-      return res.status(401).json({message:"Unauthorized"});  
-    }
-    await Comment.deleteOne({"_id":comment_id});
-    return res.status(200).json({message:"Comment deleted successfully"});
+    await Comment.findByIdAndDelete(commentId);
+    res.status(200).json({ message: "Comment deleted" });
 
-  } catch (error) {
-    return res.status(500).json({message:error.message});
+  } catch (err) {
+    console.error("❌ DELETE COMMENT ERROR:", err.message);
+    res.status(500).json({ message: err.message });
   }
-}
+};
+
+
+
+// export const delete_comment_of_user = async (req,res) =>{
+//   const { token,post_id,comment_id} = req.body;
+//   try {
+
+//     const user = await User.findOne({ token:token}).select("_id");
+//     if (!user) {
+//       return res.status(404).json({message:"User not found"});
+//     }
+
+//     const comment = await Comment.findOne({"  _id":comment_id});
+//     if (!comment) {
+//       return res.status(404).json({message:"Comment not found"});
+//     }
+//     if (comment.userId.toString() !== user._id.toString()){
+//       return res.status(401).json({message:"Unauthorized"});  
+//     }
+//     await Comment.deleteOne({"_id":comment_id});
+//     return res.status(200).json({message:"Comment deleted successfully"});
+
+//   } catch (error) {
+//     return res.status(500).json({message:error.message});
+//   }
+// }
 
 export const increment_likes = async (req,res) => {
   const {post_id }= req.body;
@@ -222,3 +255,25 @@ export const increment_likes = async (req,res) => {
     return res.status(500).json({message:error.message});
   }
 }
+
+export const create_comment = async (req, res) => {
+  try {
+    const { postId, body } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) return res.status(401).json({ message: "No token" });
+
+    // ✅ Your User model has a "token" field — this will work
+    const user = await User.findOne({ token: token });
+
+    if (!user) return res.status(401).json({ message: "Invalid token" });
+
+    const comment = await Comment.create({ postId, body, userId: user._id });
+    const populated = await comment.populate("userId", "name username profilePicture");
+
+    res.status(201).json(populated);
+  } catch (err) {
+    console.error("❌ CREATE COMMENT ERROR:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};

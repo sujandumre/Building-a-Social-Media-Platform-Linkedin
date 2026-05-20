@@ -109,3 +109,48 @@ export const getAllComments = createAsyncThunk(
   }
 );
 
+export const createComment = createAsyncThunk(
+  "post/createComment",
+  async (data, thunkAPI) => {
+    try {
+
+      const response = await clientServer.post("/create_comment", {
+        token: localStorage.getItem("token"),
+        post_id: data.post_id,
+        body: data.body,
+      });
+
+      return thunkAPI.fulfillWithValue(response.data);
+
+    } catch (error) {
+
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to create comment"
+      );
+    }
+  }
+);
+
+
+export const deleteComment = createAsyncThunk(
+  "post/deleteComment",
+  async (data, thunkAPI) => {
+    try {
+
+      await clientServer.delete("/delete_comment", {
+        data: {
+          token: localStorage.getItem("token"),
+          comment_id: data.comment_id,
+        },
+      });
+
+      return thunkAPI.fulfillWithValue(data.comment_id);
+
+    } catch (error) {
+
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to delete comment"
+      );
+    }
+  }
+);

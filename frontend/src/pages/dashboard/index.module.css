@@ -164,3 +164,151 @@
   height: 20px;
   flex-shrink: 0;
 }
+
+.commentsContainer {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  justify-content: center;
+  display:flex;
+  align-items: center;
+}
+
+.allCommentsContainer {
+  width: 40vw;
+  height: 80vh;
+  background: white;
+  border-radius: 10px;
+  position: relative;
+  padding: 1.4rem;
+}
+
+/* commentsSection */
+.commentsSection {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.commentCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.noComments {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+/* Each comment row */
+.singleComment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.singleComment:last-of-type {
+  border-bottom: none;
+}
+
+.singleComment img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: #ddd;
+}
+
+.commentMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.commentMeta strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+.commentUsername {
+  font-size: 12px;
+  color: #888;
+}
+
+.commentBody {
+  font-size: 14px;
+  color: #444;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+/* Comment form */
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.commentTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333;
+  background: #fafafa;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.commentTextarea:focus {
+  border-color: #0a66c2;
+  background: #fff;
+}
+
+.postCommentBtn {
+  align-self: flex-end;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #0a66c2;
+  background: #fff;
+  color: #0a66c2;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.postCommentBtn:hover:not(:disabled) {
+  background: #0a66c2;
+  color: #fff;
+}
+
+.postCommentBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
