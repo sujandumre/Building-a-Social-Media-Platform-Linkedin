@@ -16,6 +16,7 @@
   flex-direction: column;
   gap:1.2rem;
   align-items: start;
+  border-right: 1px solid rgb(222, 222, 222);
 }
   
 .sideBarOption {
@@ -64,4 +65,14 @@
   font-size: 1.6rem;
   width: 22px;
   height: 22px;
+}
+
+
+.homeContainer_extraContainer {
+  border-left: 1px solid rgb(222, 222, 222);
+  padding-left: 1.2rem;
+}
+
+.homeContainer_feedContainer {
+  padding-inline: 0.8rem;
 }

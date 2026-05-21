@@ -154,3 +154,36 @@ export const deleteComment = createAsyncThunk(
     }
   }
 );
+
+export const sendConnectionRequest = createAsyncThunk(
+  "user/sendConnectionRequest",
+  async (user, thunkAPI)=> {
+    try {
+      const response = await clientServer.post("/user/send_connection_request", {
+        token: user.token,
+        connectionId: user.user_id
+      })
+      thunkAPI.dispatch(getConnectionsRequest({token: user.token }))
+
+      return thunkAPI.fulfillWithValue(response.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const AcceptConnection = createAsyncThunk(
+  "user/acceptConnection",
+  async (user, thunkAPI)=> {
+    try {
+      const response = await clientServer.post("/user/accept_connection_request", {
+        token: user.token,
+        connection_id: user.connectionId,
+        action_type: user.action
+      });
+      return thunkAPI.fulfillWithValue(response.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message)
+    }
+  }
+)
