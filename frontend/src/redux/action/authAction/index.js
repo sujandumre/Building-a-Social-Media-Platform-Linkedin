@@ -68,6 +68,8 @@
 import { clientServer } from "@/config";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+
+
 // LOGIN USER
 export const loginUser = createAsyncThunk(
   "user/login",
@@ -214,24 +216,52 @@ export const getAllUsers = createAsyncThunk(
 
 
 
+// export const getConnectionsRequest = createAsyncThunk(
+//   "user/getConnectionRequests",
+//   async (user, thunkAPI)=> {
+//     try {
+//       const response = await clientServer.get("/user/getConnectionRequests", {
+
+//         params: {
+//           token: user?.token
+//         }
+//       })
+//       return thunkAPI.fulfillWithValue(response.data.connections);
+//     } catch (error) {
+
+//       console.log(error);
+//       return thunkAPI.rejectWithValue(error.response.data.message);
+//     }
+//   }
+// );
+
 export const getConnectionsRequest = createAsyncThunk(
   "user/getConnectionRequests",
-  async (user, thunkAPI)=> {
+  async (user, thunkAPI) => {
     try {
-      const response = await clientServer.get("/user/getConnectionRequests", {
 
-        params: {
-          token: user.token
+      const response = await clientServer.get(
+        "/user/getConnectionRequests",
+        {
+          params: {
+            token: user?.token,
+          },
         }
-      })
-      return thunkAPI.fulfillWithValue(response.data.connections);
+      );
+
+      return response.data.connections;
+
     } catch (error) {
 
       console.log(error);
-      return thunkAPI.rejectWithValue(error.response.data.message);
+
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Something went wrong"
+      );
     }
   }
 );
+
 
 export const getMyconnectionRequests = createAsyncThunk(
   "user/getMyConnectionRequests",

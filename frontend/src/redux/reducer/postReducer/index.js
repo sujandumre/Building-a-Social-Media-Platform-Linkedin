@@ -45,7 +45,7 @@
 // export default postSlice.reducers;
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllPosts, createPost, getAllComments, sendConnectionRequest} from "@/redux/action/postAction";
+import { getAllPosts,  getAllComments, sendConnectionRequest} from "@/redux/action/postAction";
 
 const initialState = {
   posts: [], // FIXED (consistent naming)
@@ -98,12 +98,14 @@ const postSlice = createSlice({
       state.postId = action.payload.post_id;
     })
 
-    // ✅ SEND REQUEST
-  .addCase(sendConnectionRequest.fulfilled, (state, action) => {
+    .addCase(sendConnectionRequest.fulfilled, (state, action) => {
+      state.message = action.payload; // ✅
+    })
+    .addCase(sendConnectionRequest.rejected, (state, action) => {
+      state.message = action.payload; // ✅
+    })
 
-    state.message = action.payload.message;
-
-  })
+    
 
 
 

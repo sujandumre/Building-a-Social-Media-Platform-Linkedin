@@ -76,7 +76,7 @@
 
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAboutUser, getAllUsers, getConnectionsRequest, getMyconnectionRequests, loginUser, registerUser } from "../../action/authAction";
+import { getAboutUser, getAllUsers, getMyconnectionRequests, getConnectionsRequest, loginUser, registerUser } from "../../action/authAction";
 
 const initialState = {
   user: [],

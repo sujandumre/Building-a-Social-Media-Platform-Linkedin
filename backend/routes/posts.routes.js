@@ -2,7 +2,8 @@ import { Router } from "express";
 import express from "express";
 // import { activeCheck, createPost, getAllPosts,deletePost,increment_likes, delete_comment_of_user, get_comments_by_post } from "../controllers/posts.controller.js";
 
-import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment } from "../controllers/posts.controller.js";
+import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment} from "../controllers/posts.controller.js";
+import { sendConnectionRequest } from "../controllers/posts.controller.js";
 
 import multer from "multer";
 import path from "path";
@@ -68,6 +69,6 @@ router.route("/comments").post(create_comment);
 router.route("/get_comments").post(get_comments_by_post);
 router.route("/delete_comment").post(delete_comment_of_user);
 router.route("/increment_post_likes").post(increment_likes);
-
+router.route('/user/send_connection_request').post(sendConnectionRequest);
 
 export default router;

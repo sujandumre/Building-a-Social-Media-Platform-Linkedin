@@ -13,34 +13,55 @@ import { sendConnectionRequest } from '@/redux/action/postAction';
 
 export default function ViewProfilePage({userProfile}) {
   const router = useRouter();
-  const postReducer = useSelector((state) =>
-    state.postReducer);
-
+  const postReducer = useSelector((state) => state.postReducer);
+  const authState = useSelector((state) => state.auth);
   const dispatch= useDispatch();
   const [userPosts, setUserPosts] = useState([]);
   const [isCurrentUserInConnection, setIsCurrentUserInConnection]=useState(false);
   const [isConnectionNull, setConnectionNull] = useState(true);
   const searchParamers = useSearchParams();
 
-  const getUsersPost = async ()=> {
-    await dispatch (getAllPosts());
-    await dispatch(getConnectionsRequest({token: localStorage.getItem("token")}));
+  // const getUsersPost = async ()=> {
+  //   console.log("Token:", localStorage.getItem("token"));
+  //   // await dispatch (getAllPosts());
+  //   dispatch (getAllPosts());
+  //   // await dispatch(getConnectionsRequest({token: localStorage.getItem("token")}));
+  //   dispatch(getConnectionsRequest({
+  //   token: localStorage.getItem("token"),}));
+  // }
+
+  const getUsersPost = async () => {
+  const token = localStorage.getItem("token");
+  
+  dispatch(getAllPosts());
+  
+  if (token) {
+    dispatch(getConnectionsRequest({ token }));
   }
+};
+//   useEffect(()=> {
+//     let post = postReducer.posts.filter((post) => {
+//       return post.userId.username === router.query.username
+//     })
 
-  useEffect(()=> {
-    let post = postReducer.posts.filter((post) => {
-      return post.userId.username === router.query.username
-    })
+//     setUserPosts(post);
+//   },[postReducer.posts]
+// );
 
-    setUserPosts(post);
-  },[postReducer.posts]
-);
+useEffect(() => {
+  const filteredPosts = postReducer?.posts?.filter((post) => {
+    return post?.userId?.username === router.query.username;
+  }) || [];
+
+  setUserPosts(filteredPosts);
+
+}, [postReducer?.posts, router.query.username]);
 
 useEffect(()=> {
-    console.log(authState.connections, userProfile.userId._id)
-    if (authState.connections.some(user => user.connection._id === userProfile.userId._id)) {
+    console.log(authState.connections, userProfile.userId?._id)
+    if (authState.connections.some(user => user.connection._id === userProfile.userId?._id)) {
       setIsCurrentUserInConnection(true)
-      if(authState.connections.find(user => user.connectionId._id === userProfile.userId._id).status_accepted === true) {
+      if(authState.connections.find(user => user.connectionId._id === userProfile.userId?._id).status_accepted === true) {
         setIsCurrentUserInConnection(false)
       } 
     }
@@ -80,7 +101,14 @@ useEffect(()=> {
       <button className={styles.connectedButton}>{isConnectionNull ? "Pending": "Connected"}</button>
     :
     <button onClick={()=> {
-      dispatch(sendConnectionRequest({token: localStorage.getItem("token"),userId}))
+      // dispatch(sendConnectionRequest({token: localStorage.getItem("token"),userId}))
+      //  dispatch(sendConnectionRequest(userProfile._id));
+      dispatch(sendConnectionRequest({ 
+  token: localStorage.getItem("token"),  
+  user_id: userProfile?.userId?._id 
+}));
+
+
     }} className={styles.connectBtn}>Connect</button>
     }
 
@@ -144,6 +172,22 @@ useEffect(()=> {
   </div>
 </div>
 
+       <div className="workHistory">
+        <h4>Work History</h4>
+        <div className={styles.workHistoryContainer}>
+          {
+            userProfile.pastWork?.map((work, index) => {
+              return (
+                <div key={index} className={styles.workHistoryCard}>
+                  <p style={{ fontWeight: "bold", display:"flex", alignItems:"center", gap:"0.8rem"}}>{work.company} - {work.position}</p>
+
+                  <p>{work.years}</p>
+                  </div>
+              )
+            })
+          }
+        </div>
+       </div>
         </div>
       
     </DashboardLayout>

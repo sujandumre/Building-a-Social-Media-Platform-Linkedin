@@ -1,11 +1,11 @@
-import User from "../models/user.model.js";
+
 // import jwt from "jsonwebtoken";
 import Profile from "../models/profile.model.js";
 import bcrypt from "bcrypt";
 import Post from "../models/posts.model.js";
-
+import User from "../models/user.model.js";
 import Comment from "../models/comments.model.js";
-
+import ConnectionRequest from "../models/connection.model.js";
 
 
 export const activeCheck = async (req,res)=>{
@@ -45,6 +45,8 @@ return res.json({message:"User registered successfully"});
     return res.status(500).json({message:"error.message"})
   }
 }
+
+
 
 // export const createPost = async (req,res) =>{
 //   const { token } = req.body;
@@ -277,3 +279,62 @@ export const create_comment = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+// -------------------- CONNECTION REQUEST --------------------
+// export const sendConnectionRequest = async (req, res) => {
+//   const { token, connectionId } = req.body;
+
+//   try {
+//     const user = await User.findOne({ token });
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const connectionUser = await User.findById(connectionId);
+//     if (!connectionUser) {
+//       return res.status(404).json({ message: "Connection user not found" });
+//     }
+
+//     const existingRequest = await ConnectionRequest.findOne({
+//       userId: user._id,
+//       connectionId: connectionUser._id,
+//     });
+
+//     if (existingRequest) {
+//       return res.status(400).json({ message: "Request already sent" });
+//     }
+
+//     const request = new ConnectionRequest({
+//       userId: user._id,
+//       connectionId: connectionUser._id,
+//     });
+
+//     await request.save();
+
+//     return res.json({ message: "Request sent" });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
+export const sendConnectionRequest = async (req, res) => {
+  const { token, connectionId } = req.body;
+
+  console.log("token:", token);           // ← add this
+  console.log("connectionId:", connectionId); // ← add this
+
+  try {
+    const user = await User.findOne({ token });
+    console.log("user found:", user);     // ← add this
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const connectionUser = await User.findById(connectionId);
+    console.log("connectionUser:", connectionUser); // ← add this
+
+    if (!connectionUser) {
+      return res.status(404).json({ message: "Connection user not found" });
+    } 
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}

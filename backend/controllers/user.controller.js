@@ -499,40 +499,6 @@ export const login = async (req, res) => {
 };
 
 
-// -------------------- CONNECTION REQUEST --------------------
-export const sendConnectionRequest = async (req, res) => {
-  const { token, connectionId } = req.body;
-
-  try {
-    const user = await User.findOne({ token });
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const connectionUser = await User.findById(connectionId);
-    if (!connectionUser) {
-      return res.status(404).json({ message: "Connection user not found" });
-    }
-
-    const existingRequest = await ConnectionRequest.findOne({
-      userId: user._id,
-      connectionId: connectionUser._id,
-    });
-
-    if (existingRequest) {
-      return res.status(400).json({ message: "Request already sent" });
-    }
-
-    const request = new ConnectionRequest({
-      userId: user._id,
-      connectionId: connectionUser._id,
-    });
-
-    await request.save();
-
-    return res.json({ message: "Request sent" });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
 
 // whatAreMyConnections
 export const whatAreMyConnections = async (req,res) =>{
@@ -762,3 +728,14 @@ export const getUserProfileAndUserbasedOnUsername = async (req, res) => {
     return res.status(500).json({message: error.message})
   }
 }
+
+// controllers/user.controller.js
+export const getConnectionRequests = async (req, res) => {
+  try {
+    const { token } = req.query;
+    // your DB logic here
+    res.status(200).json({ connections: [] });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
