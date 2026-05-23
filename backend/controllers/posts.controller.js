@@ -316,25 +316,63 @@ export const create_comment = async (req, res) => {
 //   }
 // };
 
+// export const sendConnectionRequest = async (req, res) => {
+//   const { token, connectionId } = req.body;
+
+//   console.log("token:", token);           // ← add this
+//   console.log("connectionId:", connectionId); // ← add this
+
+//   try {
+//     const user = await User.findOne({ token });
+//     console.log("user found:", user);     // ← add this
+
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const connectionUser = await User.findById(connectionId);
+//     console.log("connectionUser:", connectionUser); // ← add this
+
+//     if (!connectionUser) {
+//       return res.status(404).json({ message: "Connection user not found" });
+//     } 
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// }
+
+
 export const sendConnectionRequest = async (req, res) => {
   const { token, connectionId } = req.body;
 
-  console.log("token:", token);           // ← add this
-  console.log("connectionId:", connectionId); // ← add this
-
   try {
     const user = await User.findOne({ token });
-    console.log("user found:", user);     // ← add this
-
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const connectionUser = await User.findById(connectionId);
-    console.log("connectionUser:", connectionUser); // ← add this
-
     if (!connectionUser) {
       return res.status(404).json({ message: "Connection user not found" });
-    } 
+    }
+
+    // Prevent duplicate requests
+    const alreadySent = user.connectionRequests?.sent?.includes(connectionId);
+    const alreadyConnected = user.connections?.includes(connectionId);
+
+    if (alreadySent || alreadyConnected) {
+      return res.status(400).json({ message: "Request already sent or already connected" });
+    }
+
+    // Save to sender's sent requests
+    await User.findByIdAndUpdate(user._id, {
+      $addToSet: { "connectionRequests.sent": connectionId }
+    });
+
+    // Save to receiver's received requests
+    await User.findByIdAndUpdate(connectionId, {
+      $addToSet: { "connectionRequests.received": user._id }
+    });
+
+    return res.status(200).json({ message: "Connection request sent successfully" });
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};

@@ -173,41 +173,24 @@ export const deleteComment = createAsyncThunk(
 //   }
 // );
 
-// export const sendConnectionRequest = createAsyncThunk(
-//   "user/sendConnectionRequest",
-//   async (user, thunkAPI) => {
-//     try {
-//       const response = await clientServer.post("/user/send_connection_request", {
-//         token: user?.token,         
-//         connectionId: user?.user_id 
-//       });
-
-//       thunkAPI.dispatch(getConnectionsRequest({ token: user.token })); 
-
-//       return thunkAPI.fulfillWithValue(response.data);
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error.response?.data?.message); 
-//     }
-//   }
-// );
-
 export const sendConnectionRequest = createAsyncThunk(
   "user/sendConnectionRequest",
   async (user, thunkAPI) => {
     try {
       const response = await clientServer.post("/user/send_connection_request", {
-        token: user?.token,
-        connectionId: user?.user_id
+        token: user?.token,         
+        connectionId: user?.user_id 
       });
 
-      thunkAPI.dispatch(getConnectionsRequest({ token: user?.token })); // ✅ now imported
+      thunkAPI.dispatch(getConnectionsRequest({ token: user.token })); 
 
       return thunkAPI.fulfillWithValue(response.data);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(error.response?.data?.message); 
     }
   }
 );
+
 
 
 

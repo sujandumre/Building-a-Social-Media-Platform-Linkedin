@@ -34,7 +34,13 @@ const UserSchema = new mongoose.Schema({
   token:{
     type:String,
     default:""
-  }
+  },
+
+    connectionRequests: {
+    sent: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    received: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+  },
+  connections: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 
 });
 

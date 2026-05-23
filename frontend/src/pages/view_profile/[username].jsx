@@ -97,7 +97,7 @@ useEffect(()=> {
         <p style={{ color:"gray"}}>@{userProfile?.userId?.username}</p>
       </div>
 
-      {isCurrentUserInConnection ?
+      {/* {isCurrentUserInConnection ?
       <button className={styles.connectedButton}>{isConnectionNull ? "Pending": "Connected"}</button>
     :
     <button onClick={()=> {
@@ -110,7 +110,31 @@ useEffect(()=> {
 
 
     }} className={styles.connectBtn}>Connect</button>
-    }
+    } */}
+
+    {isCurrentUserInConnection ? (
+  <button className={styles.connectedButton}>
+    {isConnectionNull ? "Pending" : "Connected"}
+  </button>
+) : (
+  <button
+    onClick={() => {
+      const token = localStorage.getItem("token");
+      // Check both possible shapes of the profile object
+      const user_id = userProfile?.userId?._id || userProfile?._id;
+
+      if (!token || !user_id) {
+        console.error("Missing token or user_id", { token, user_id });
+        return;
+      }
+
+      dispatch(sendConnectionRequest({ token, user_id }));
+    }}
+    className={styles.connectBtn}
+  >
+    Connect
+  </button>
+)}
 
     <div>
       <p>{userProfile.bio}</p>
