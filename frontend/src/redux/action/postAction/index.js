@@ -1,7 +1,6 @@
 
 import { clientServer } from "@/config";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-// import { getConnectionsRequest } from "../authAction";
 import { getConnectionsRequest } from "@/redux/action/authAction";
 
 export const getAllPosts = createAsyncThunk(

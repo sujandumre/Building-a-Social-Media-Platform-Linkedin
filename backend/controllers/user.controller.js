@@ -367,6 +367,72 @@ import path from "path";
 
 
 // -------------------- PDF GENERATOR --------------------
+// const convertUserDataTOPDF = async (userData) => {
+//   const doc = new PDFDocument();
+
+//   const outputPath = crypto.randomBytes(32).toString("hex") + ".pdf";
+//   const fullPath = path.join("uploads", outputPath);
+
+//   console.log("Generated file:", fullPath);
+
+//   const stream = fs.createWriteStream(fullPath);
+//   doc.pipe(stream);
+
+//   // Profile picture
+//   const picPath = `uploads/${userData.userId?.profilePicture}`;
+//   if (userData.userId?.profilePicture && fs.existsSync(picPath)) {
+//     doc.image(picPath, { align: "center", width: 100, height: 100 });
+//     doc.moveDown();
+//   }
+
+//   // User Info
+//   doc.fontSize(18).text("Resume", { align: "center" });
+//   doc.moveDown();
+
+//   doc.fontSize(14).text(`Name: ${userData.userId?.name || "N/A"}`);
+//   doc.fontSize(14).text(`Username: ${userData.userId?.username || "N/A"}`);
+//   doc.fontSize(14).text(`Email: ${userData.userId?.email || "N/A"}`);
+//   doc.fontSize(14).text(`Bio: ${userData.bio || "N/A"}`);
+//   doc.fontSize(14).text(`Current Post: ${userData.currentPost || "N/A"}`);
+
+//   doc.moveDown();
+
+//   // Past Work
+//   const pastWork = userData.pastwork ?? userData.pastWork ?? [];
+//   if (pastWork.length > 0) {
+//     doc.fontSize(14).text("Past Work:");
+//     pastWork.forEach((work) => {
+//       doc.fontSize(12).text(`Company: ${work.companyName || "N/A"}`);
+//       doc.fontSize(12).text(`Position: ${work.position || "N/A"}`);
+//       doc.fontSize(12).text(`Duration: ${work.duration || "N/A"}`);
+//       doc.moveDown(0.5);
+//     });
+//   }
+
+//   // Education
+//   const education = userData.education ?? [];
+//   if (education.length > 0) {
+//     doc.moveDown();
+//     doc.fontSize(14).text("Education:");
+//     education.forEach((edu) => {
+//       doc.fontSize(12).text(`School: ${edu.school || "N/A"}`);
+//       doc.fontSize(12).text(`Degree: ${edu.degree || "N/A"}`);
+//       doc.fontSize(12).text(`Field: ${edu.fieldOfStudy || "N/A"}`);
+//       doc.moveDown(0.5);
+//     });
+//   }
+
+//   doc.end();
+
+//   await new Promise((resolve, reject) => {
+//     stream.on("finish", resolve);
+//     stream.on("error", reject);
+//   });
+
+//   return outputPath;
+// };
+
+
 const convertUserDataTOPDF = async (userData) => {
   const doc = new PDFDocument();
 
@@ -374,6 +440,11 @@ const convertUserDataTOPDF = async (userData) => {
   const fullPath = path.join("uploads", outputPath);
 
   console.log("Generated file:", fullPath);
+
+  // Ensure uploads directory exists
+  if (!fs.existsSync("uploads")) {
+    fs.mkdirSync("uploads", { recursive: true });
+  }
 
   const stream = fs.createWriteStream(fullPath);
   doc.pipe(stream);
@@ -388,45 +459,66 @@ const convertUserDataTOPDF = async (userData) => {
   // User Info
   doc.fontSize(18).text("Resume", { align: "center" });
   doc.moveDown();
-
   doc.fontSize(14).text(`Name: ${userData.userId?.name || "N/A"}`);
   doc.fontSize(14).text(`Username: ${userData.userId?.username || "N/A"}`);
   doc.fontSize(14).text(`Email: ${userData.userId?.email || "N/A"}`);
   doc.fontSize(14).text(`Bio: ${userData.bio || "N/A"}`);
   doc.fontSize(14).text(`Current Post: ${userData.currentPost || "N/A"}`);
-
   doc.moveDown();
 
   // Past Work
-  const pastWork = userData.pastwork ?? userData.pastWork ?? [];
-  if (pastWork.length > 0) {
-    doc.fontSize(14).text("Past Work:");
-    pastWork.forEach((work) => {
-      doc.fontSize(12).text(`Company: ${work.companyName || "N/A"}`);
-      doc.fontSize(12).text(`Position: ${work.position || "N/A"}`);
-      doc.fontSize(12).text(`Duration: ${work.duration || "N/A"}`);
-      doc.moveDown(0.5);
-    });
-  }
+  // const pastWork = userData.pastwork ?? userData.pastWork ?? [];
+  // if (pastWork.length > 0) {
+  //   doc.fontSize(14).text("Past Work:");
+  //   pastWork.forEach((work) => {
+  //     doc.fontSize(12).text(`  Company: ${work.companyName || "N/A"}`);
+  //     doc.fontSize(12).text(`  Position: ${work.position || "N/A"}`);
+  //     doc.fontSize(12).text(`  Duration: ${work.duration || "N/A"}`);
+  //     doc.moveDown(0.5);
+  //   });
+  // }
+  const pastWork = userData.pastwork ?? [];
+if (pastWork.length > 0) {
+  doc.moveDown();
+  doc.fontSize(14).text("Past Work:");
+  pastWork.forEach((work) => {
+    doc.fontSize(12).text(`  Company: ${work.company || "N/A"}`);   // ✅ company
+    doc.fontSize(12).text(`  Position: ${work.position || "N/A"}`); // ✅ position
+    doc.fontSize(12).text(`  Years: ${work.years || "N/A"}`);       // ✅ years
+    doc.moveDown(0.5);
+  });
+}
 
   // Education
+  // const education = userData.education ?? [];
+  // if (education.length > 0) {
+  //   doc.moveDown();
+  //   doc.fontSize(14).text("Education:");
+  //   education.forEach((edu) => {
+  //     doc.fontSize(12).text(`  School: ${edu.school || "N/A"}`);
+  //     doc.fontSize(12).text(`  Degree: ${edu.degree || "N/A"}`);
+  //     doc.fontSize(12).text(`  Field: ${edu.fieldOfStudy || "N/A"}`);
+  //     doc.moveDown(0.5);
+  //   });
+  // }
+
   const education = userData.education ?? [];
-  if (education.length > 0) {
-    doc.moveDown();
-    doc.fontSize(14).text("Education:");
-    education.forEach((edu) => {
-      doc.fontSize(12).text(`School: ${edu.school || "N/A"}`);
-      doc.fontSize(12).text(`Degree: ${edu.degree || "N/A"}`);
-      doc.fontSize(12).text(`Field: ${edu.fieldOfStudy || "N/A"}`);
-      doc.moveDown(0.5);
-    });
-  }
+if (education.length > 0) {
+  doc.moveDown();
+  doc.fontSize(14).text("Education:");
+  education.forEach((edu) => {
+    doc.fontSize(12).text(`  School: ${edu.school || "N/A"}`);           // ✅ school
+    doc.fontSize(12).text(`  Degree: ${edu.degree || "N/A"}`);           // ✅ degree
+    doc.fontSize(12).text(`  Field: ${edu.fieldOfStudy || "N/A"}`);      // ✅ fieldOfStudy
+    doc.moveDown(0.5);
+  });
+}
 
-  doc.end();
-
+  // ✅ Wrap doc.end() INSIDE the promise so we wait for full write
   await new Promise((resolve, reject) => {
     stream.on("finish", resolve);
     stream.on("error", reject);
+    doc.end(); // moved here
   });
 
   return outputPath;
@@ -502,7 +594,7 @@ export const login = async (req, res) => {
 
 // whatAreMyConnections
 export const whatAreMyConnections = async (req,res) =>{
-  const { token }= req.body;
+  const { token }= req.query;
 
   try {
 
@@ -562,18 +654,64 @@ export const updateUserprofile = async (req, res) => {
 };
 
 // updateProfileData
+// export const updateProfileData = async (req, res) => {
+//   try {
+//     const { token, ...newProfileData } = req.body;
+//     const userProfile = await User.findOne({ token });
+//     if (!userProfile) return res.status(404).json({ message: "User not found" });
+
+//     const profile_to_update = await Profile.findOne({ userId: userProfile._id });
+//     Object.assign(profile_to_update, newProfileData);
+//     await profile_to_update.save();
+
+//     return res.json({ message: "Profile updated" });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const updateProfileData = async (req, res) => {
   try {
-    const { token, ...newProfileData } = req.body;
+    const { token, bio, currentPost, pastWork, education } = req.body;
+    
+    console.log("1. Request body:", req.body);        // ✅ check what's coming in
+    console.log("2. pastWork received:", pastWork);    // ✅ is it defined?
+
     const userProfile = await User.findOne({ token });
+    console.log("3. User found:", userProfile?._id);  // ✅ is token valid?
+
     if (!userProfile) return res.status(404).json({ message: "User not found" });
 
     const profile_to_update = await Profile.findOne({ userId: userProfile._id });
-    Object.assign(profile_to_update, newProfileData);
+    console.log("4. Profile found:", profile_to_update); // ✅ does profile exist?
+
+    if (!profile_to_update) return res.status(404).json({ message: "Profile not found" });
+
+    if (bio !== undefined) profile_to_update.bio = bio;
+    if (currentPost !== undefined) profile_to_update.currentPost = currentPost;
+
+    if (pastWork !== undefined) {
+      profile_to_update.pastwork = pastWork.map((work) => ({
+        company: work.company,
+        position: work.position,
+        years: work.duration ?? work.years,
+      }));
+    }
+
+    if (education !== undefined) {
+      profile_to_update.education = education.map((edu) => ({
+        school: edu.institution ?? edu.school,
+        degree: edu.degree,
+        fieldOfStudy: edu.fieldOfStudy ?? "",
+      }));
+    }
+
     await profile_to_update.save();
+    console.log("5. Saved pastwork:", profile_to_update.pastwork); // ✅ did it save?
 
     return res.json({ message: "Profile updated" });
   } catch (error) {
+    console.error("Error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -594,18 +732,33 @@ export const getAllUserProfile = async (req, res) => {
 
 
 // -------------------- GET CONNECTION REQUESTS --------------------
+// export const getMyConnectionRequests = async (req, res) => {
+//   const { token } = req.body;
+
+//   try {
+//     const user = await User.findOne({ token });
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const connections = await ConnectionRequest.find({
+//       userId: user._id,
+//     }).populate("connectionId", "name username email profilePicture");
+
+//     return res.json({ connections });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
+
 export const getMyConnectionRequests = async (req, res) => {
-  const { token } = req.body;
-
+  const { token } = req.query;
   try {
-    const user = await User.findOne({ token });
+    const user = await User.findOne({ token })
+      .populate("connectionRequests.received", "name username email profilePicture");
+    
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    const connections = await ConnectionRequest.find({
-      userId: user._id,
-    }).populate("connectionId", "name username email profilePicture");
-
-    return res.json({ connections });
+    console.log("Received requests:", user.connectionRequests.received);
+    return res.json({ connections: user.connectionRequests.received });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -630,30 +783,69 @@ export const getUserAndProfile = async (req, res) => {
 };
 
 // download profile
+// export const downloadProfile = async (req, res) => {
+//   try {
+//     const user_id = req.query.id;
+//     return res.json({ message: "Not implemented yet" });
+    
+//     const userProfile = await Profile.findOne({ userId: user_id }).populate(
+//       "userId",
+//       "name username email profilePicture"
+//     );
+
+    
+//     if (!userProfile) {
+//       return res.status(404).json({ message: "Profile not found" });
+//     }
+//     const fileName = await convertUserDataTOPDF(userProfile);
+//     console.log("Downloading file:", fileName);
+//     const filePath = `uploads/${fileName}`;
+
+//     return res.download(filePath);
+
+
+//     // const outputPath = await convertUserDataTOPDF(userProfile);
+//     // return res.json({ message: outputPath });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
+
 export const downloadProfile = async (req, res) => {
   try {
     const user_id = req.query.id;
 
-    
+    // ✅ Removed the early return that was blocking everything
+
+    if (!user_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const userProfile = await Profile.findOne({ userId: user_id }).populate(
       "userId",
       "name username email profilePicture"
     );
 
-    
     if (!userProfile) {
       return res.status(404).json({ message: "Profile not found" });
     }
+
     const fileName = await convertUserDataTOPDF(userProfile);
     console.log("Downloading file:", fileName);
-    const filePath = `uploads/${fileName}`;
 
-    return res.download(filePath);
+    const filePath = path.join("uploads", fileName);
 
+    // ✅ Option A — let the server send the file directly (no BASE_URL needed on frontend)
+    return res.download(filePath, "resume.pdf", (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        return res.status(500).json({ message: "Failed to send file" });
+      }
+    });
 
-    // const outputPath = await convertUserDataTOPDF(userProfile);
-    // return res.json({ message: outputPath });
   } catch (error) {
+    console.error("downloadProfile error:", error);
     return res.status(500).json({ message: error.message });
   }
 };

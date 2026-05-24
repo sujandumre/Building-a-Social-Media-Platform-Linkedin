@@ -2,7 +2,7 @@ import { Router } from "express";
 import express from "express";
 // import { activeCheck, createPost, getAllPosts,deletePost,increment_likes, delete_comment_of_user, get_comments_by_post } from "../controllers/posts.controller.js";
 
-import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment,  sendConnectionRequest} from "../controllers/posts.controller.js";
+import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment, sendConnectionRequest} from "../controllers/posts.controller.js";
 
 
 import multer from "multer";

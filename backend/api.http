@@ -24,7 +24,7 @@ Content-Type: application/json
 
 
 {
-  "token":    "e07abfeaf1f76881eb99119bcbd45cf8b8b4a30307ac8d2e2a4a1aba49ef30c3"
+  "token":    "03924eb125c1ba883710cf89f3e72d51a78bfb8d6e573890373311fb519a8f1d"
 }
 
 ###
@@ -32,7 +32,7 @@ Content-Type: application/json
 Content-Type: application/json
 
 {
-  "token":    "e07abfeaf1f76881eb99119bcbd45cf8b8b4a30307ac8d2e2a4a1aba49ef30c3",
+  "token":    "e5ee31c861163336e11df5ffc97ec0767d4675f1da33ee0829c7b256b7a76cf8",
   "bio": "Software developer with 5 years of experience in web development.",
   "currentPost": "Senior Software Engineer at Tech Company",
   "pastWork": [
