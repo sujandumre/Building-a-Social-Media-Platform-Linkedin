@@ -77,6 +77,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import { getAboutUser, getAllUsers, getMyconnectionRequests, getConnectionsRequest, loginUser, registerUser } from "../../action/authAction";
+import { AcceptConnection } from "@/redux/action/postAction";
 
 const initialState = {
   user: [],
@@ -206,6 +207,16 @@ const authSlice = createSlice({
       .addCase(getMyconnectionRequests.rejected, (state, action) => {
         state.message= action.payload
       })
+      .addCase(AcceptConnection.fulfilled, (state, action) => {
+  state.message = "Connection accepted";
+  // remove from connectionRequest list
+  state.connectionRequest = state.connectionRequest.filter(
+    (user) => user._id !== action.meta.arg.connectionId
+  );
+})
+.addCase(AcceptConnection.rejected, (state, action) => {
+  state.message = action.payload;
+})
 
   },
  

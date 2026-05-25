@@ -53,27 +53,25 @@ export const createPost = async (req, res) => {
   try {
     const { token, body } = req.body;
 
-    // ✅ Check user
+    // Check user
     const user = await User.findOne({ token: token });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Create post
+    //  Create post
     const post = new Post({
       userId: user._id,
       body: body || "",
-      // media: req.file ? req.file.path : "",   // better than filename
-      // media: req.file ? req.file.filename : "",
       media: req.file.filename,
       fileType: req.file ? req.file.mimetype.split("/")[1] : "",
     });
 
-    // ✅ Save to DB
+    // Save to DB
     const savedPost = await post.save();
 
-    // ✅ Return full data (important)
+    // Return full data (important)
     return res.status(201).json({
       message: "Post created successfully",
       post: savedPost,
@@ -121,21 +119,6 @@ export const deletePost = async (req,res) =>{
   }
 }
 
-// export const get_comments_by_post = async (req,res)=>{
-//   // const { post_id } = req.query
-//   const post = await Post.findById(req.body.post_id);
-
-//   try {
-//     const post= await Post.findOne({_id:post_id});
-//     if(!post) {
-//       return res.status(404).json({message: "post not found"});
-//     } 
-//     return res.status(404).json({comments:post.comments});
-
-//   } catch (error) {
-//     return res.status(500).json({message:error.message});
-//   }
-// }
 
 export const get_comments_by_post = async (req, res) => {
   try {
@@ -167,15 +150,15 @@ export const delete_comment_of_user = async (req, res) => {
 
     if (!token) return res.status(401).json({ message: "No token" });
 
-    // ✅ Find user by token (same pattern as create_comment)
+    // Find user by token (same pattern as create_comment)
     const user = await User.findOne({ token: token });
     if (!user) return res.status(401).json({ message: "Invalid token" });
 
-    // ✅ Find comment and verify ownership
+    // Find comment and verify ownership
     const comment = await Comment.findById(commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    // ✅ Only allow delete if this user owns the comment
+    // Only allow delete if this user owns the comment
     if (comment.userId.toString() !== user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
@@ -184,36 +167,12 @@ export const delete_comment_of_user = async (req, res) => {
     res.status(200).json({ message: "Comment deleted" });
 
   } catch (err) {
-    console.error("❌ DELETE COMMENT ERROR:", err.message);
+    // console.error(" DELETE COMMENT ERROR:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
 
-
-// export const delete_comment_of_user = async (req,res) =>{
-//   const { token,post_id,comment_id} = req.body;
-//   try {
-
-//     const user = await User.findOne({ token:token}).select("_id");
-//     if (!user) {
-//       return res.status(404).json({message:"User not found"});
-//     }
-
-//     const comment = await Comment.findOne({"  _id":comment_id});
-//     if (!comment) {
-//       return res.status(404).json({message:"Comment not found"});
-//     }
-//     if (comment.userId.toString() !== user._id.toString()){
-//       return res.status(401).json({message:"Unauthorized"});  
-//     }
-//     await Comment.deleteOne({"_id":comment_id});
-//     return res.status(200).json({message:"Comment deleted successfully"});
-
-//   } catch (error) {
-//     return res.status(500).json({message:error.message});
-//   }
-// }
 
 export const increment_likes = async (req,res) => {
   const {post_id }= req.body;
@@ -240,7 +199,7 @@ export const create_comment = async (req, res) => {
 
     if (!token) return res.status(401).json({ message: "No token" });
 
-    // ✅ Your User model has a "token" field — this will work
+    // Your User model has a "token" field — this will work
     const user = await User.findOne({ token: token });
 
     if (!user) return res.status(401).json({ message: "Invalid token" });
@@ -250,71 +209,13 @@ export const create_comment = async (req, res) => {
 
     res.status(201).json(populated);
   } catch (err) {
-    console.error("❌ CREATE COMMENT ERROR:", err.message);
+    // console.error(" CREATE COMMENT ERROR:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
 
 // -------------------- CONNECTION REQUEST --------------------
-// export const sendConnectionRequest = async (req, res) => {
-//   const { token, connectionId } = req.body;
-
-//   try {
-//     const user = await User.findOne({ token });
-//     if (!user) return res.status(404).json({ message: "User not found" });
-
-//     const connectionUser = await User.findById(connectionId);
-//     if (!connectionUser) {
-//       return res.status(404).json({ message: "Connection user not found" });
-//     }
-
-//     const existingRequest = await ConnectionRequest.findOne({
-//       userId: user._id,
-//       connectionId: connectionUser._id,
-//     });
-
-//     if (existingRequest) {
-//       return res.status(400).json({ message: "Request already sent" });
-//     }
-
-//     const request = new ConnectionRequest({
-//       userId: user._id,
-//       connectionId: connectionUser._id,
-//     });
-
-//     await request.save();
-
-//     return res.json({ message: "Request sent" });
-//   } catch (error) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
-
-// export const sendConnectionRequest = async (req, res) => {
-//   const { token, connectionId } = req.body;
-
-//   console.log("token:", token);           // ← add this
-//   console.log("connectionId:", connectionId); // ← add this
-
-//   try {
-//     const user = await User.findOne({ token });
-//     console.log("user found:", user);     // ← add this
-
-//     if (!user) return res.status(404).json({ message: "User not found" });
-
-//     const connectionUser = await User.findById(connectionId);
-//     console.log("connectionUser:", connectionUser); // ← add this
-
-//     if (!connectionUser) {
-//       return res.status(404).json({ message: "Connection user not found" });
-//     } 
-//   } catch (error) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// }
-
-
 export const sendConnectionRequest = async (req, res) => {
   const { token, connectionId } = req.body;
 

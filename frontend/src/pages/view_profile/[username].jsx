@@ -7,7 +7,7 @@ import { getAllPosts } from "@/redux/action/postAction";
 import { useRouter } from "next/router";
 import styles from "./index.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getConnectionsRequest } from "@/redux/action/authAction";
+import { getConnectionsRequest, getMyconnectionRequests} from "@/redux/action/authAction";
 
 import { sendConnectionRequest } from "@/redux/action/postAction";
 
@@ -38,6 +38,7 @@ export default function ViewProfilePage({ userProfile }) {
 
     if (token) {
       dispatch(getConnectionsRequest({ token }));
+      dispatch(getMyconnectionRequests({ token }) );
     }
   };
 
@@ -84,41 +85,73 @@ export default function ViewProfilePage({ userProfile }) {
     console.log("userPosts:", userPosts);
   }, [postReducer?.posts, userPosts]);
 
+
   // useEffect(() => {
-  //   console.log(authState.connections, userProfile.userId?._id);
-  //   if (
-  //     authState.connections.some(
-  //       (user) => user.connection._id === userProfile.userId?._id,
-  //     )
-  //   ) {
+  //   if (!userProfile?.userId?._id || !authState?.connections) return;
+
+  //   const targetId = userProfile.userId._id;
+
+  //   const found = authState.connections.find(
+  //     (user) => user.connection._id === targetId, // ← use consistent field name
+  //   );
+
+  //   if (found) {
   //     setIsCurrentUserInConnection(true);
-  //     if (
-  //       authState.connections.find(
-  //         (user) => user.connectionId._id === userProfile.userId?._id,
-  //       ).status_accepted === true
-  //     ) {
-  //       setIsCurrentUserInConnection(false);
-  //     }
+  //     setConnectionNull(found.status_accepted !== true); // pending if not accepted
+  //   } else {
+  //     setIsCurrentUserInConnection(false);
+  //     setConnectionNull(true);
   //   }
-  // }, [authState.connections]);
+  // }, [authState.connections, userProfile]);
 
-  useEffect(() => {
-    if (!userProfile?.userId?._id || !authState?.connections) return;
 
-    const targetId = userProfile.userId._id;
 
-    const found = authState.connections.find(
-      (user) => user.connection._id === targetId, // ← use consistent field name
+//   useEffect(() => {
+//   if (!userProfile?.userId?._id || !authState?.connections) return;
+
+//   const targetId = userProfile.userId._id.toString();
+
+//   const found = authState.connections.find((user) => {
+//     // ✅ handle both shapes: { connection: { _id } } or { connection: "id_string" }
+//     const connectionId = user.connection?._id?.toString() || user.connection?.toString();
+//     return connectionId === targetId;
+//   });
+
+//   if (found) {
+//     setIsCurrentUserInConnection(true);
+//     setConnectionNull(found.status_accepted !== true);
+//   } else {
+//     setIsCurrentUserInConnection(false);
+//     setConnectionNull(true);
+//   }
+  
+// }, [authState.connections, userProfile]);
+
+useEffect(() => {
+  if (!userProfile?.userId?._id || !authState?.connections) return;
+
+  const targetId = userProfile.userId._id.toString();
+
+  const found = authState.connections.find((user) => {
+    // ✅ handle flat shape: { _id, name, username... }
+    return user._id?.toString() === targetId ||
+           user.connection?._id?.toString() === targetId ||
+           user.connection?.toString() === targetId;
+  });
+
+  if (found) {
+    setIsCurrentUserInConnection(true);
+    setConnectionNull(false); // ✅ false means "Connected" not "Pending"
+  } else {
+    // ✅ also check connectionRequests.sent for "Pending" state
+    const isPending = authState.connectionRequest?.find(
+      (req) => req._id?.toString() === targetId
     );
+    setIsCurrentUserInConnection(isPending ? true : false);
+    setConnectionNull(isPending ? true : false); // true = Pending
+  }
 
-    if (found) {
-      setIsCurrentUserInConnection(true);
-      setConnectionNull(found.status_accepted !== true); // pending if not accepted
-    } else {
-      setIsCurrentUserInConnection(false);
-      setConnectionNull(true);
-    }
-  }, [authState.connections, userProfile]);
+}, [authState.connections, authState.connectionRequest, userProfile]);
 
   useEffect(() => {
     getUsersPost();
@@ -378,21 +411,54 @@ export default function ViewProfilePage({ userProfile }) {
   );
 }
 
+// export async function getServerSideProps(context) {
+//   console.log("From View");
+//   console.log(context.query.username);
+
+//   const request = await clientServer.get(
+//     "/user/get_profile_based_on_username",
+//     {
+//       params: {
+//         username: context.query.username,
+//       },
+//     },
+//   );
+
+//   const response = await request.data;
+
+//   console.log(response);
+//   return { props: { userProfile: request.data.profile } };
+// }
+
+
 export async function getServerSideProps(context) {
-  console.log("From View");
-  console.log(context.query.username);
+  const { username } = context.query;
+  
+  console.log("From View, username:", username);
 
-  const request = await clientServer.get(
-    "/user/get_profile_based_on_username",
-    {
-      params: {
-        username: context.query.username,
-      },
-    },
-  );
+  // ✅ Guard against undefined username
+  if (!username) {
+    return { notFound: true };
+  }
 
-  const response = await request.data;
+  try {
+    const request = await clientServer.get(
+      "/user/get_profile_based_on_username",
+      {
+        params: { username },
+      }
+    );
 
-  console.log(response);
-  return { props: { userProfile: request.data.profile } };
+    console.log("Profile response:", request.data);
+
+    if (!request.data.profile) {
+      return { notFound: true };
+    }
+
+    return { props: { userProfile: request.data.profile } };
+
+  } catch (error) {
+    console.error("getServerSideProps error:", error.message);
+    return { notFound: true }; // ✅ shows 404 page instead of crashing
+  }
 }

@@ -852,27 +852,52 @@ export const downloadProfile = async (req, res) => {
 
 
 // -------------------- ACCEPT REQUEST --------------------
+// export const acceptConnectionRequest = async (req, res) => {
+//   const { token, requestId, action_type } = req.body;
+
+//   try {
+//     const user = await User.findOne({ token });
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const request = await ConnectionRequest.findById(requestId);
+//     if (!request) {
+//       return res.status(404).json({ message: "Connection request not found" });
+//     }
+
+//     if (action_type === "accept") {
+//       request.status_accepted = true;
+//     } else {
+//       request.status_accepted = false;
+//     }
+
+//     await request.save();
+
+//     return res.json({ message: "Request updated" });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const acceptConnectionRequest = async (req, res) => {
-  const { token, requestId, action_type } = req.body;
+  const { token, connection_id, action_type } = req.body;
 
   try {
     const user = await User.findOne({ token });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const request = await ConnectionRequest.findById(requestId);
-    if (!request) {
-      return res.status(404).json({ message: "Connection request not found" });
-    }
+    // Remove from received requests and add to connections
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { "connectionRequests.received": connection_id },
+      $addToSet: { connections: connection_id }
+    });
 
-    if (action_type === "accept") {
-      request.status_accepted = true;
-    } else {
-      request.status_accepted = false;
-    }
+    // Remove from sender's sent requests and add to their connections
+    await User.findByIdAndUpdate(connection_id, {
+      $pull: { "connectionRequests.sent": user._id },
+      $addToSet: { connections: user._id }
+    });
 
-    await request.save();
-
-    return res.json({ message: "Request updated" });
+    return res.json({ message: "Connection accepted" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -922,11 +947,22 @@ export const getUserProfileAndUserbasedOnUsername = async (req, res) => {
 }
 
 // controllers/user.controller.js
+
+
 export const getConnectionRequests = async (req, res) => {
   try {
     const { token } = req.query;
-    // your DB logic here
-    res.status(200).json({ connections: [] });
+
+    const user = await User.findOne({ token }).populate(
+      "connections",
+      "name username email profilePicture"
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    console.log("My connections:", user.connections); // ✅ debug
+
+    return res.status(200).json({ connections: user.connections });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

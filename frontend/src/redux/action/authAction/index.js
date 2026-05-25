@@ -283,12 +283,13 @@ export const getMyconnectionRequests = createAsyncThunk(
   "user/getMyConnectionRequests",
   async (user, thunkAPI) => {
     try {
-      const response = await clientServer.get("/user/getMyConnectionRequests", { // ✅ fixed route
+      const response = await clientServer.get("/user/getMyConnectionRequests", {
         params: {
           token: user.token
         }
       });
-      return thunkAPI.fulfillWithValue(response.data);
+      // ✅ return the array, not the whole object
+      return thunkAPI.fulfillWithValue(response.data.connections ?? []);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || { message: "Failed" });
     }

@@ -1,0 +1,78 @@
+/* .userCard {
+  display: flex;
+  width: 100%;
+  gap: 1.2rem;
+  padding: 1.3rem;
+  align-items: center;
+  box-shadow: 10px 10px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.profilePicture > img  {
+  width: 6.5rem;
+  border-radius: 50%;
+} */
+/* .myConnections {
+
+} */
+
+
+.container {
+  padding: 1.5rem;
+  max-width: 700px;
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
+}
+
+.userCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profilePicture {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #e0e0e0;
+  background-color: #f0f0f0;
+}
+
+.userInfo h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.userInfo p {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: gray;
+}
+
+.acceptBtn {
+  padding: 0.4rem 1rem;
+  background-color: #0a66c2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.acceptBtn:hover {
+  background-color: #084e9a;
+}
