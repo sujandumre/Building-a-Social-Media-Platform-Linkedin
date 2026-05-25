@@ -73,17 +73,17 @@ export default function ViewProfilePage({ userProfile }) {
     setUserPosts(filteredPosts);
   }, [postReducer?.posts, router.isReady, userProfile]);
 
-  useEffect(() => {
-    console.log("=== DEBUG ===");
-    console.log("router.isReady:", router.isReady);
-    console.log("postReducer.posts:", postReducer?.posts);
-    console.log("postReducer.posts length:", postReducer?.posts?.length);
-    console.log("userProfile:", userProfile);
-    console.log("profileUsername:", userProfile?.userId?.username);
-    console.log("pastwork:", userProfile?.pastwork);
-    console.log("first post userId:", postReducer?.posts?.[0]?.userId);
-    console.log("userPosts:", userPosts);
-  }, [postReducer?.posts, userPosts]);
+  // useEffect(() => {
+  //   console.log("=== DEBUG ===");
+  //   console.log("router.isReady:", router.isReady);
+  //   console.log("postReducer.posts:", postReducer?.posts);
+  //   console.log("postReducer.posts length:", postReducer?.posts?.length);
+  //   console.log("userProfile:", userProfile);
+  //   console.log("profileUsername:", userProfile?.userId?.username);
+  //   console.log("pastwork:", userProfile?.pastwork);
+  //   console.log("first post userId:", postReducer?.posts?.[0]?.userId);
+  //   console.log("userPosts:", userPosts);
+  // }, [postReducer?.posts, userPosts]);
 
 
   // useEffect(() => {
