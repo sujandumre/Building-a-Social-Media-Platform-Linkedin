@@ -121,32 +121,13 @@
   border-radius: 20px;
 }
 
-/* .optionscontainer {
-  display:flex;
-  height: 20%;
-  width: 100%;
-  justify-content: space-between;
-}
-.singleOption_optionsContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-.singleOption_optionsContainer > svg {
-  
-  cursor: pointer;
-  width: 8%;
-  height: 100%;
-} */
-
 .optionsContainer {
    display: flex !important;
   flex-direction: row !important;
   align-items: center;
   width: 100%;
   padding: 10px 0;
-  justify-content: space-between; /* spreads items across full width */
+  justify-content: space-between; 
   padding: 10px 40px;
 }
 
@@ -162,6 +143,7 @@
 .singleOption_optionsContainer svg {
   width: 20px;
   height: 20px;
+  min-width: 1rem;
   flex-shrink: 0;
 }
 
@@ -312,3 +294,13 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+@media screen and (max-width: 600px) {
+  .optionsContainer {
+    .allCommentsContainer {
+      width: 90svw;
+      height: 80vh;
+    }
+  }
+}
+
