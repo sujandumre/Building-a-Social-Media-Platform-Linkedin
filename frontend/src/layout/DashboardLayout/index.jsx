@@ -7,7 +7,7 @@ import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-
+import { getAllUsers } from "@/redux/action/authAction";
 export default function DashboardLayout({ children }) {
   const router = useRouter();
   const authState = useSelector((state) => state.auth);
@@ -18,7 +18,11 @@ export default function DashboardLayout({ children }) {
       router.push("/login");
     }
     dispatch(setTokenIsThere());
-  },[]);
+  }, []);
+
+  useEffect(() => {
+  dispatch(getAllUsers());
+}, []);
 
   return (
     <div>
@@ -101,30 +105,41 @@ export default function DashboardLayout({ children }) {
 
           <div className={styles.homeContainer_feedContainer}>{children}</div>
 
-          <div className={styles.homeContainer_extraContainer}>
+          <div className={styles.       homeContainer_extraContainer}>
             <h3>Top Profiles</h3>
 
             {authState.all_profiles_fetched &&
-              authState.all_profiles?.map((profile) => {
+              authState.all_users?.map((profile) => {
                 return (
-                  <div
-                    key={profile._id}
+                  <div onClick={() => {
+    const username = profile?.userId?.username;
+    if (!username) {
+      console.error("Username is undefined for post:", profile);
+      return;
+    }
+    router.push(`/view_profile/${username}`);
+  }}
+                    key={profile?.userId?._id}
                     className={styles.extraContainer_profile}
                   >
-                    <img src={profile.profile_pic} alt="" />
-                    <p>{profile.userId.name}</p>
+                    <img src={profile?.profile_pic} alt="" />
+                    <p>{profile?.userId?.name}</p>
                   </div>
                 );
               })}
-          </div>
+          </div> 
+
+          
         </div>
       </div>
-      
 
       <div className={styles.mobileNavbarView}>
-        <div onClick={() => {
-                  router.push("/dashboard");
-                }} className={styles.singleNavItemHolder_mobileView}>
+        <div
+          onClick={() => {
+            router.push("/dashboard");
+          }}
+          className={styles.singleNavItemHolder_mobileView}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -140,9 +155,12 @@ export default function DashboardLayout({ children }) {
             />
           </svg>
         </div>
-        <div onClick={() => {
-                  router.push("/search");
-                }} className={styles.singleNavItemHolder_mobileView}>
+        <div
+          onClick={() => {
+            router.push("/search");
+          }}
+          className={styles.singleNavItemHolder_mobileView}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -158,9 +176,12 @@ export default function DashboardLayout({ children }) {
             />
           </svg>
         </div>
-        <div onClick={() => {
-                  router.push("/connection");
-                }} className={styles.singleNavItemHolder_mobileView}>
+        <div
+          onClick={() => {
+            router.push("/connection");
+          }}
+          className={styles.singleNavItemHolder_mobileView}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

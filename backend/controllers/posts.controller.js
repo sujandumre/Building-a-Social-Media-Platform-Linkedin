@@ -140,9 +140,6 @@ export const get_comments_by_post = async (req, res) => {
 
 
 
-
-
-
 export const delete_comment_of_user = async (req, res) => {
   try {
     const { commentId } = req.body;
@@ -150,15 +147,12 @@ export const delete_comment_of_user = async (req, res) => {
 
     if (!token) return res.status(401).json({ message: "No token" });
 
-    // Find user by token (same pattern as create_comment)
     const user = await User.findOne({ token: token });
     if (!user) return res.status(401).json({ message: "Invalid token" });
 
-    // Find comment and verify ownership
     const comment = await Comment.findById(commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    // Only allow delete if this user owns the comment
     if (comment.userId.toString() !== user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
@@ -167,7 +161,6 @@ export const delete_comment_of_user = async (req, res) => {
     res.status(200).json({ message: "Comment deleted" });
 
   } catch (err) {
-    // console.error(" DELETE COMMENT ERROR:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
@@ -198,8 +191,6 @@ export const create_comment = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) return res.status(401).json({ message: "No token" });
-
-    // Your User model has a "token" field — this will work
     const user = await User.findOne({ token: token });
 
     if (!user) return res.status(401).json({ message: "Invalid token" });
@@ -209,13 +200,12 @@ export const create_comment = async (req, res) => {
 
     res.status(201).json(populated);
   } catch (err) {
-    // console.error(" CREATE COMMENT ERROR:", err.message);
+    
     res.status(500).json({ message: err.message });
   }
 };
 
 
-// -------------------- CONNECTION REQUEST --------------------
 export const sendConnectionRequest = async (req, res) => {
   const { token, connectionId } = req.body;
 
@@ -236,12 +226,11 @@ export const sendConnectionRequest = async (req, res) => {
       return res.status(400).json({ message: "Request already sent or already connected" });
     }
 
-    // Save to sender's sent requests
     await User.findByIdAndUpdate(user._id, {
       $addToSet: { "connectionRequests.sent": connectionId }
     });
 
-    // Save to receiver's received requests
+    
     await User.findByIdAndUpdate(connectionId, {
       $addToSet: { "connectionRequests.received": user._id }
     });

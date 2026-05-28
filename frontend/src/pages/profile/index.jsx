@@ -223,7 +223,7 @@ export default function ProfilePage() {
                     </div>
                   ))
                 ) : (
-                  <p>No work history found</p> // ← tells you if array is empty vs undefined
+                  <p>No work history found</p> 
                 )}
               </div>
               <button
@@ -301,26 +301,7 @@ export default function ProfilePage() {
         <div className="educationHistory">
           <h4>Education</h4>
           <div className={styles.EduHistoryContainer}>
-            {/* {userProfile.education?.length > 0 ? (
-              userProfile.education.map((edu, index) => (
-                <div key={index} className={styles.EduHistoryCard}>
-                  <p
-                    style={{
-                      fontWeight: "bold",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.8rem",
-                    }}
-                  >
-                    {edu.institution} - {edu.degree}
-                  </p>
-                  <p>{edu.duration}</p>
-                </div>
-                
-              ))
-            ) : (
-              <p>No education found</p> 
-            )} */}
+            
 
             {userProfile.education?.filter(edu => edu.institution || edu.degree || edu.duration).length > 0 ? (
   userProfile.education

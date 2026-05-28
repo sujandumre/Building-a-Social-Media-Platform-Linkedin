@@ -26,7 +26,6 @@ export default function Dashboard() {
   const [postContent, setPostContent] = useState("");
   const [fileContent, setFileContent] = useState(null);
 
-  // ─── On mount: auth-guard + initial data fetch ────────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -40,7 +39,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // ─── Create post ──────────────────────────────────────────────────────────
   const handleUpload = async () => {
     await dispatch(createPost({ file: fileContent, body: postContent }));
     setPostContent("");
@@ -48,7 +46,6 @@ export default function Dashboard() {
     dispatch(getAllPosts());
   };
 
-  // ─── Post a comment (via fetch + re-fetch comments) ───────────────────────
   const handlePostComment = async (postId) => {
     const body = commentText[postId]?.trim();
     if (!body) return;
@@ -65,10 +62,10 @@ export default function Dashboard() {
 
       if (!res.ok) throw new Error("Failed to post comment");
 
-      // ✅ Clear textarea immediately after success
+      // Clear textarea immediately after success
       setCommentText((prev) => ({ ...prev, [postId]: "" }));
 
-      // ✅ Re-fetch to show new comment + update count
+      // Re-fetch to show new comment + update count
       await dispatch(getAllComments({ post_id: postId }));
       dispatch(getAllPosts());
     } catch (err) {
@@ -76,11 +73,10 @@ export default function Dashboard() {
     }
   };
 
-  // ─── Delete a comment (only shown to the comment's author) ───────────────
   const handleDeleteComment = async (commentId, postId) => {
     try {
       const res = await fetch(`${BASE_URL}/delete_comment`, {
-        method: "POST", // ✅ matches your route: router.route("/delete_comment").post(...)
+        method: "POST", // matches your route: router.route("/delete_comment").post(...)
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -90,7 +86,7 @@ export default function Dashboard() {
 
       if (!res.ok) throw new Error("Failed to delete comment");
 
-      // ✅ Re-fetch to update UI
+      // Re-fetch to update UI
       dispatch(getAllComments({ post_id: postId }));
       dispatch(getAllPosts());
     } catch (err) {
@@ -98,7 +94,7 @@ export default function Dashboard() {
     }
   };
 
-  // ─── Toggle comment panel ─────────────────────────────────────────────────
+  // ─── Toggle comment panel
   const handleToggleComments = async (postId) => {
     if (openCommentPostId === postId) {
       setOpenCommentPostId(null); // close
@@ -108,7 +104,6 @@ export default function Dashboard() {
     }
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <UserLayout>
       <DashboardLayout>
@@ -181,7 +176,20 @@ export default function Dashboard() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <p style={{ fontWeight: "bold" }}>
+                        <p
+                          style={{ fontWeight: "bold", cursor: "pointer" }}
+                          onClick={() => {
+                            const username = post.userId?.username;
+                            if (!username) {
+                              console.error(
+                                "Username is undefined for post:",
+                                post,
+                              );
+                              return;
+                            }
+                            router.push(`/view_profile/${username}`);
+                          }}
+                        >
                           {post.userId?.name}
                         </p>
 
@@ -305,7 +313,7 @@ export default function Dashboard() {
                         </div>
                       </div>
 
-                      {/* ── Comments Panel ── */}
+                      
                       {openCommentPostId === post._id && (
                         <div className={styles.commentsSection}>
                           {/* Comment count header */}
@@ -359,7 +367,6 @@ export default function Dashboard() {
                                       </span>
                                     </div>
 
-                                    {/* Delete comment — only for comment author */}
                                     {comment.userId?._id ===
                                       authState?.user?.userId?._id && (
                                       <button
@@ -368,7 +375,7 @@ export default function Dashboard() {
                                             comment._id,
                                             post._id,
                                           )
-                                        } // ✅ both args passed
+                                        } // both args passed
                                         className={styles.deleteCommentBtn}
                                         title="Delete comment"
                                       >
@@ -401,7 +408,7 @@ export default function Dashboard() {
                             );
                           })}
 
-                          {/* Write a comment form */}
+                          
                           <div className={styles.commentForm}>
                             <textarea
                               className={styles.commentTextarea}
@@ -425,7 +432,6 @@ export default function Dashboard() {
                           </div>
                         </div>
                       )}
-                      {/* ── End Comments Panel ── */}
                     </div>
                   </div>
                 </div>
