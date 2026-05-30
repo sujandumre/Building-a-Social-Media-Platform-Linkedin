@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import LoginPopup from "@/components/LoginPopup";
 import {
   getAllComments,
   getAllPosts,
@@ -25,6 +26,14 @@ export default function Dashboard() {
   const [openCommentPostId, setOpenCommentPostId] = useState(null);
   const [postContent, setPostContent] = useState("");
   const [fileContent, setFileContent] = useState(null);
+  const [likedPosts, setLikedPosts] = useState([]);
+const [showLoginPopup, setShowLoginPopup] = useState(false);
+
+const getProfilePic = (pic) => {
+    if (!pic || pic === "default.jpg") return "/default-avatar.png";
+    if (pic?.startsWith("http")) return pic;
+    return `${BASE_URL}/uploads/${pic}`;
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,49 +118,63 @@ export default function Dashboard() {
       <DashboardLayout>
         <div className={styles.homeComponent}>
           <div className={styles.wrapper}>
-            {/* ── Create Post ── */}
+
             <div className={styles.createPostContainer}>
-              <img
-                className={styles.userProfile}
-                src={`${BASE_URL}/uploads/${authState?.user?.userId?.profilePicture}`}
-                alt="your profile"
-              />
-              <textarea
-                onChange={(e) => setPostContent(e.target.value)}
-                value={postContent}
-                placeholder="What's in your mind?"
-                className={styles.textAreaOfContent}
-              />
-              <label htmlFor="fileUpload">
-                <div className={styles.Fab}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
-                </div>
-              </label>
-              <input
-                onChange={(e) => setFileContent(e.target.files[0])}
-                type="file"
-                hidden
-                id="fileUpload"
-              />
-              {postContent.length > 0 && (
-                <div onClick={handleUpload} className={styles.uploadButton}>
-                  Post
-                </div>
-              )}
-            </div>
+  <img
+    className={styles.userProfile}
+    src={getProfilePic(authState?.user?.userId?.profilePicture)}
+    alt="your profile"
+  />
+  
+  <textarea
+    onChange={(e) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setShowLoginPopup(true); 
+        return;
+      }
+      setPostContent(e.target.value);
+    }}
+    value={postContent}
+    placeholder="What's in your mind?"
+    className={styles.textAreaOfContent}
+  />
+
+  <label htmlFor="fileUpload">
+    <div className={styles.Fab}>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        strokeWidth={1.5} stroke="currentColor" className="size-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </div>
+  </label>
+
+  <input
+    onChange={(e) => setFileContent(e.target.files[0])}
+    type="file" hidden id="fileUpload"
+  />
+
+  {postContent.length > 0 && (
+    <div
+      onClick={() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setShowLoginPopup(true); 
+          return;
+        }
+        handleUpload(); 
+      }}
+      className={styles.uploadButton}
+    >
+      Post
+    </div>
+  )}
+</div>
+
+{/* ← add popup at bottom of return */}
+{showLoginPopup && (
+  <LoginPopup onClose={() => setShowLoginPopup(false)} />
+)}
 
             {/* ── Posts List ── */}
             <div className={styles.postsContainer}>
@@ -235,7 +258,8 @@ export default function Dashboard() {
                       {/* ── Post Actions ── */}
                       <div className={styles.optionsContainer}>
                         {/* Like */}
-                        <div
+                       
+                         <div
                           onClick={async () => {
                             await dispatch(
                               incrementPostLike({ post_id: post._id }),
@@ -244,6 +268,7 @@ export default function Dashboard() {
                           }}
                           className={styles.singleOption_optionsContainer}
                         >
+
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -343,14 +368,16 @@ export default function Dashboard() {
                                 key={comment._id}
                                 className={styles.singleComment}
                               >
+                                
                                 <img
-                                  src={
-                                    comment.userId?.profilePicture
-                                      ? `${BASE_URL}/uploads/${comment.userId.profilePicture}`
-                                      : "/default1.png"
-                                  }
-                                  alt="profile"
-                                />
+  src={
+    userProfile?.profile_pic?.startsWith("http") 
+      ? userProfile?.profile_pic  
+      : `${BASE_URL}/uploads/${userProfile?.profile_pic || "default.jpg"}` 
+  }
+  alt="profile"
+  onError={(e) => e.target.src = "/default-avatar.png"} 
+/>
                                 <div className={styles.commentMeta}>
                                   <div
                                     style={{

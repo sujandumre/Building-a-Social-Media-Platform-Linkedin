@@ -58,7 +58,6 @@ useEffect(() => {
   const targetId = userProfile.userId._id.toString();
 
   const found = authState.connections.find((user) => {
-    //handle flat shape: { _id, name, username... }
     return user._id?.toString() === targetId ||
            user.connection?._id?.toString() === targetId ||
            user.connection?.toString() === targetId;
@@ -200,10 +199,15 @@ useEffect(() => {
                         <div className={styles.card_profileContainer}>
 
                           {post.media !== "" ? (
+                           
                             <img
-                              src={`${BASE_URL}/uploads/${post.media}`}
-                              alt=""
-                            />
+  src={
+    post.media?.startsWith("http")
+      ? post.media
+      : `${BASE_URL}/uploads/${post.media}`
+  }
+  alt=""
+/>
                           ) : (
                             <div
                               style={{ width: "3.4rem", height: "3.4rem" }}

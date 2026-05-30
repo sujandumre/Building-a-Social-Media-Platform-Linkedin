@@ -12,6 +12,11 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const authState = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const getProfilePic = (pic) => {
+    if (!pic || pic === "default.jpg") return "/default-avatar.png";
+    if (pic?.startsWith("http")) return pic;
+    return `${BASE_URL}/uploads/${pic}`;
+  };
 
   useEffect(() => {
     if (localStorage.getItem("token") === null) {
@@ -19,6 +24,7 @@ export default function DashboardLayout({ children }) {
     }
     dispatch(setTokenIsThere());
   }, []);
+  
 
   useEffect(() => {
   dispatch(getAllUsers());
@@ -105,7 +111,7 @@ export default function DashboardLayout({ children }) {
 
           <div className={styles.homeContainer_feedContainer}>{children}</div>
 
-          <div className={styles.       homeContainer_extraContainer}>
+          <div className={styles.homeContainer_extraContainer}>
             <h3>Top Profiles</h3>
 
             {authState.all_profiles_fetched &&

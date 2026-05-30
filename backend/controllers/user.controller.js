@@ -6,13 +6,13 @@ import ConnectionRequest from "../models/connection.model.js";
 import Connection from "../models/connection.model.js";
 import Post from "../models/posts.model.js";
 import Comment from "../models/comments.model.js";
-
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
-
+ 
 
 
 const convertUserDataTOPDF = async (userData) => {
@@ -120,8 +120,50 @@ export const register = async (req, res) => {
   }
 };
 
+export const googleLogin = async (req, res) => {
+  const { name, email, profile_pic } = req.body;
 
-export const login = async (req, res) => {
+  try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        username: email.split("@")[0],
+        password: Math.random().toString(36),
+        profilePicture: profile_pic || "default.jpg", // ← saves Google URL
+      });
+    }
+
+    // ← always check and create profile if missing
+    const existingProfile = await Profile.findOne({ userId: user._id });
+    if (!existingProfile) {
+      await Profile.create({
+        userId: user._id,
+        profile_pic: profile_pic || "default.jpg", // ← saves Google URL
+      });
+    } else {
+      // ← update profile pic if it's empty
+      if (!existingProfile.profile_pic || existingProfile.profile_pic === "default.jpg") {
+        existingProfile.profile_pic = profile_pic || "default.jpg";
+        await existingProfile.save();
+      }
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    return res.json({ token, user });
+
+  } catch (error) {
+    console.log("Google login error:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -130,18 +172,15 @@ export const login = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User does not exist" });
-    }
+    if (!user) return res.status(404).json({ message: "User does not exist" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = crypto.randomBytes(32).toString("hex");
-
-    await User.updateOne({ _id: user._id }, { token });
+    // ← use jwt instead of crypto
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
 
     return res.json({ token });
   } catch (error) {
@@ -150,8 +189,7 @@ export const login = async (req, res) => {
 };
 
 
-
-// whatAreMyConnections
+// whatAreMyConnectionsexport
 export const whatAreMyConnections = async (req,res) =>{
   const { token }= req.query;
 
@@ -173,7 +211,8 @@ export const whatAreMyConnections = async (req,res) =>{
 export const uploadProfilePicture = async (req, res) => {
   const { token } = req.body;
   try {
-    const user = await User.findOne({ token });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.profilePicture = req.file.filename;
@@ -188,16 +227,15 @@ export const uploadProfilePicture = async (req, res) => {
 // updateUserProfile
 export const updateUserprofile = async (req, res) => {
   try {
-    
     const { token, ...newUserData } = req.body;
-    const user = await User.findOne({ token });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const { username, email } = newUserData;
-
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      
       if (String(existingUser._id) !== String(user._id)) {
         return res.status(400).json({ message: "User already exists" });
       }
@@ -213,21 +251,17 @@ export const updateUserprofile = async (req, res) => {
 };
 
 
+
 export const updateProfileData = async (req, res) => {
   try {
     const { token, bio, currentPost, pastWork, education } = req.body;
-    
-    console.log("1. Request body:", req.body);        
-    console.log("2. pastWork received:", pastWork);   
 
-    const userProfile = await User.findOne({ token });
-    console.log("3. User found:", userProfile?._id);  
-
+    // ← decode token instead of finding by token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userProfile = await User.findById(decoded.id);
     if (!userProfile) return res.status(404).json({ message: "User not found" });
 
     const profile_to_update = await Profile.findOne({ userId: userProfile._id });
-    console.log("4. Profile found:", profile_to_update); 
-
     if (!profile_to_update) return res.status(404).json({ message: "Profile not found" });
 
     if (bio !== undefined) profile_to_update.bio = bio;
@@ -250,9 +284,8 @@ export const updateProfileData = async (req, res) => {
     }
 
     await profile_to_update.save();
-    console.log("5. Saved pastwork:", profile_to_update.pastwork); 
-
     return res.json({ message: "Profile updated" });
+
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: error.message });
@@ -278,11 +311,12 @@ export const getAllUserProfile = async (req, res) => {
 export const getMyConnectionRequests = async (req, res) => {
   const { token } = req.query;
   try {
-    const user = await User.findOne({ token })
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id)
       .populate("connectionRequests.received", "name username email profilePicture");
-    
+
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log("Received requests:", user.connectionRequests.received);
+
     return res.json({ connections: user.connectionRequests.received });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -290,23 +324,33 @@ export const getMyConnectionRequests = async (req, res) => {
 };
 
 
-// getUserAndProfile
+
 export const getUserAndProfile = async (req, res) => {
   try {
     const { token } = req.query;
-    const user = await User.findOne({ token });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const userProfile = await Profile.findOne({ userId: user._id }).populate(
-      "userId",
-      "name username email profilePicture"
+    let userProfile = await Profile.findOne({ userId: decoded.id }).populate(
+      "userId", "name username email profilePicture"
     );
+
+   
+    if (!userProfile) {
+      const user = await User.findById(decoded.id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      userProfile = await Profile.create({ userId: decoded.id });
+      userProfile = await Profile.findOne({ userId: decoded.id }).populate(
+        "userId", "name username email profilePicture"
+      );
+    }
+
     return res.json(userProfile);
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 
 
@@ -349,7 +393,8 @@ export const acceptConnectionRequest = async (req, res) => {
   const { token, connection_id, action_type } = req.body;
 
   try {
-    const user = await User.findOne({ token });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     await User.findByIdAndUpdate(user._id, {
@@ -367,7 +412,6 @@ export const acceptConnectionRequest = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 // -------------------- COMMENT POST --------------------
 export const commentPost = async (req, res) => {
@@ -417,14 +461,13 @@ export const getConnectionRequests = async (req, res) => {
   try {
     const { token } = req.query;
 
-    const user = await User.findOne({ token }).populate(
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).populate(
       "connections",
       "name username email profilePicture"
     );
 
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    console.log("My connections:", user.connections); 
 
     return res.status(200).json({ connections: user.connections });
   } catch (error) {

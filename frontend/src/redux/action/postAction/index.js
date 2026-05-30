@@ -80,6 +80,8 @@ export const incrementPostLike = createAsyncThunk(
   }
 )
 
+
+
 export const getAllComments = createAsyncThunk(
   "post/getAllComments",
   async (postData, thunkAPI) => {
@@ -155,49 +157,33 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
-// export const sendConnectionRequest = createAsyncThunk(
-//   "user/sendConnectionRequest",
-//   async (user, thunkAPI)=> {
-//     try {
-//       const response = await clientServer.post("/user/send_connection_request", {
-//         token: user.token,
-//         connectionId: user.user_id
-//       })
-//       thunkAPI.dispatch(getConnectionsRequest({token: user.token }))
 
-//       return thunkAPI.fulfillWithValue(response.data);
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error.response.data.message);
-//     }
-//   }
-// );
+
 
 export const sendConnectionRequest = createAsyncThunk(
   "user/sendConnectionRequest",
   async (user, thunkAPI) => {
     try {
-      const response = await clientServer.post("/user/send_connection_request", {
-        token: user?.token,         
-        connectionId: user?.user_id 
+      const token = user?.token || localStorage.getItem("token"); // ← fallback to localStorage
+      
+      const response = await clientServer.post("/send_connection_request", {
+        token,
+        connectionId: user?.user_id
       });
 
-      thunkAPI.dispatch(getConnectionsRequest({ token: user.token })); 
-
+      thunkAPI.dispatch(getConnectionsRequest({ token }));
       return thunkAPI.fulfillWithValue(response.data);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message); 
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
-
-
-
 
 export const AcceptConnection = createAsyncThunk(
   "user/acceptConnection",
   async (user, thunkAPI)=> {
     try {
-      const response = await clientServer.post("/user/accept_connection_request", {
+      const response = await clientServer.post("/accept_connection_request", {
         token: user.token,
         connection_id: user.connectionId,
         action_type: user.action

@@ -36,50 +36,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// REGISTER USER
-// export const registerUser = createAsyncThunk(
-//   "user/register",
-//   async (user, thunkAPI) => {
-//     try {
-//       const response = await clientServer.post("/register", {
-//         username: user.username,
-//         password: user.password,
-//         email: user.email,
-//         name: user.name,
-//       });
-
-//       // RETURN SUCCESS DATA
-//       return thunkAPI.fulfillWithValue(response.data);
-
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(
-//         error.response?.data || {
-//           message: "Registration failed",
-//         }
-//       );
-//     }
-//   }
-// );
-
-
-// export const registerUser = createAsyncThunk(
-//   "user/register",
-//   async (user, thunkAPI) => {
-//     try {
-//       const response = await clientServer.post("/register", user);
-
-//       console.log("REGISTER RESPONSE:", response.data);
-
-//       return response.data; // VERY IMPORTANT
-//     } catch (error) {
-//       console.log("REGISTER ERROR:", error.response?.data);
-
-//       return thunkAPI.rejectWithValue(
-//         error.response?.data?.message || "Registration failed"
-//       );
-//     }
-//   }
-// );
 
 export const registerUser = createAsyncThunk(
   "user/register",
@@ -152,45 +108,23 @@ export const getAllUsers = createAsyncThunk(
 
 
 
-// export const getConnectionsRequest = createAsyncThunk(
-//   "user/getConnectionRequests",
-//   async (user, thunkAPI)=> {
-//     try {
-//       const response = await clientServer.get("/user/getConnectionRequests", {
-
-//         params: {
-//           token: user?.token
-//         }
-//       })
-//       return thunkAPI.fulfillWithValue(response.data.connections);
-//     } catch (error) {
-
-//       console.log(error);
-//       return thunkAPI.rejectWithValue(error.response.data.message);
-//     }
-//   }
-// );
-
 export const getConnectionsRequest = createAsyncThunk(
   "user/getConnectionRequests",
   async (user, thunkAPI) => {
-    try {
+    try{
+      console.log("user passed:", user); // ← check this
+      console.log("token:", user?.token); // ← is token here?
 
-      const response = await clientServer.get(
-        "/user/getConnectionRequests",
-        {
-          params: {
-            token: user?.token,
-          },
-        }
-      );
+      const token = user?.token || localStorage.getItem("token"); // ← fallback to localStorage
+      
+      const response = await clientServer.get("/getConnectionRequests", {
+        params: { token },
+      });
 
       return response.data.connections;
 
     } catch (error) {
-
       console.log(error);
-
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Something went wrong"
       );
@@ -199,35 +133,47 @@ export const getConnectionsRequest = createAsyncThunk(
 );
 
 
-// export const getMyconnectionRequests = createAsyncThunk(
-//   "user/getMyConnectionRequests",
-//   async (user, thunkAPI)=> {
-//     try {
-//       const response = await clientServer.get("/user/user_connection_request", {
-//         params: {
-//           token: user.token
-//         }
-//       });
-//       return thunkAPI.fulfillWithValue(response.data.connections)
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error.response.data.message)
-//     }
-//   }
-// )
-
 export const getMyconnectionRequests = createAsyncThunk(
   "user/getMyConnectionRequests",
   async (user, thunkAPI) => {
     try {
-      const response = await clientServer.get("/user/getMyConnectionRequests", {
+      const response = await clientServer.get("/getMyConnectionRequests", {
         params: {
           token: user.token
         }
       });
-      //  return the array, not the whole object
+      
       return thunkAPI.fulfillWithValue(response.data.connections ?? []);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || { message: "Failed" });
+    }
+  }
+);
+
+
+
+export const updateProfileData = createAsyncThunk(
+  "user/updateProfileData",
+  async (data, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      console.log("1. Token from localStorage:", token); // ← is token here?
+      console.log("2. Data being sent:", data);           // ← what data is sent?
+      console.log("3. Full request body:", { token, ...data }); // ← full body
+
+      const response = await clientServer.post("/update_profile_data", {
+        token,
+        ...data,
+      });
+
+      console.log("4. Response:", response.data); // ← did it succeed?
+      return response.data;
+
+    } catch (error) {
+      console.log("5. Error:", error.response?.data); // ← what error?
+      console.log("6. Error status:", error.response?.status);
+      return thunkAPI.rejectWithValue(error.response?.data);
     }
   }
 );

@@ -1,5 +1,5 @@
 
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import Profile from "../models/profile.model.js";
 import bcrypt from "bcrypt";
 import Post from "../models/posts.model.js";
@@ -53,36 +53,29 @@ export const createPost = async (req, res) => {
   try {
     const { token, body } = req.body;
 
-    // Check user
-    const user = await User.findOne({ token: token });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ← decode token
+    const user = await User.findById(decoded.id); // ← find by id
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    //  Create post
     const post = new Post({
       userId: user._id,
       body: body || "",
-      media: req.file.filename,
+      media: req.file ? req.file.filename : "",
       fileType: req.file ? req.file.mimetype.split("/")[1] : "",
     });
 
-    // Save to DB
     const savedPost = await post.save();
 
-    // Return full data (important)
     return res.status(201).json({
       message: "Post created successfully",
       post: savedPost,
     });
 
   } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 
 export const getAllPosts = async (req,res) =>{
   try {
@@ -94,31 +87,29 @@ export const getAllPosts = async (req,res) =>{
   }
 }
 
-export const deletePost = async (req,res) =>{
 
-  const { token, post_id} = req.body;
+export const deletePost = async (req, res) => {
+  const { token, post_id } = req.body;
 
   try {
-    const user = await User.findOne({ token: token}).select("_id");
-    if(!user) {
-      return res.status(404).json({message: "user not found"});
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("_id");
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const post = await Post.findOne({_id:post_id});
-    if(!post) {
-      return res.status(404).json({message: "post not found"});
-    }
+    const post = await Post.findOne({ _id: post_id });
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
     if (post.userId.toString() !== user._id.toString()) {
-      return res.status(401).json({message:"Unauthorized"});
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    await Post.deleteOne({_id:post_id});
+    await Post.deleteOne({ _id: post_id });
+    return res.json({ message: "Post deleted successfully" });
 
   } catch (error) {
-    return res.status(500).json({message:error.message});
+    return res.status(500).json({ message: error.message });
   }
-}
-
+};
 
 export const get_comments_by_post = async (req, res) => {
   try {
@@ -140,6 +131,7 @@ export const get_comments_by_post = async (req, res) => {
 
 
 
+
 export const delete_comment_of_user = async (req, res) => {
   try {
     const { commentId } = req.body;
@@ -147,7 +139,8 @@ export const delete_comment_of_user = async (req, res) => {
 
     if (!token) return res.status(401).json({ message: "No token" });
 
-    const user = await User.findOne({ token: token });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ← decode token
+    const user = await User.findById(decoded.id); // ← find by id
     if (!user) return res.status(401).json({ message: "Invalid token" });
 
     const comment = await Comment.findById(commentId);
@@ -164,7 +157,6 @@ export const delete_comment_of_user = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 
 export const increment_likes = async (req,res) => {
@@ -185,14 +177,16 @@ export const increment_likes = async (req,res) => {
   }
 }
 
+
 export const create_comment = async (req, res) => {
   try {
     const { postId, body } = req.body;
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) return res.status(401).json({ message: "No token" });
-    const user = await User.findOne({ token: token });
-
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ← decode token
+    const user = await User.findById(decoded.id); // ← find by id
     if (!user) return res.status(401).json({ message: "Invalid token" });
 
     const comment = await Comment.create({ postId, body, userId: user._id });
@@ -200,25 +194,23 @@ export const create_comment = async (req, res) => {
 
     res.status(201).json(populated);
   } catch (err) {
-    
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 export const sendConnectionRequest = async (req, res) => {
   const { token, connectionId } = req.body;
 
   try {
-    const user = await User.findOne({ token });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const connectionUser = await User.findById(connectionId);
-    if (!connectionUser) {
-      return res.status(404).json({ message: "Connection user not found" });
-    }
+    if (!connectionUser) return res.status(404).json({ message: "Connection user not found" });
 
-    // Prevent duplicate requests
     const alreadySent = user.connectionRequests?.sent?.includes(connectionId);
     const alreadyConnected = user.connections?.includes(connectionId);
 
@@ -230,7 +222,6 @@ export const sendConnectionRequest = async (req, res) => {
       $addToSet: { "connectionRequests.sent": connectionId }
     });
 
-    
     await User.findByIdAndUpdate(connectionId, {
       $addToSet: { "connectionRequests.received": user._id }
     });
@@ -241,4 +232,3 @@ export const sendConnectionRequest = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-

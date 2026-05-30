@@ -30,6 +30,12 @@ export default function ProfilePage() {
     duration: "",
   });
 
+  const getProfilePic = (pic) => {
+    if (!pic || pic === "default.jpg") return "/default-avatar.png";
+    if (pic?.startsWith("http")) return pic;
+    return `${BASE_URL}/uploads/${pic}`;
+  };
+ 
   const handleWorkInputChange = (e) => {
     const { name, value } = e.target;
     setInputData({ ...inputData, [name]: value });
@@ -76,13 +82,20 @@ export default function ProfilePage() {
     dispatch(getAboutUser({ token: localStorage.getItem("token") }));
   };
 
+ 
+
+ 
+
+
   const updateProfileData = async () => {
     try {
+      
       await clientServer.post("/user_update", {
         token: localStorage.getItem("token"),
-        name: userProfile.userId.name,
+        name: userProfile.userId?.name,
       });
 
+      
       await clientServer.post("/update_profile_data", {
         token: localStorage.getItem("token"),
         bio: userProfile.bio,
@@ -91,13 +104,14 @@ export default function ProfilePage() {
         education: userProfile.education,
       });
 
-      dispatch(getAboutUser({ token: localStorage.getItem("token") }));
+      dispatch(getAboutUser());
       alert("Profile updated successfully!");
     } catch (err) {
       console.error("Update failed:", err.response?.data || err.message);
       alert("Failed to update profile.");
     }
   };
+
   return (
     <UserLayout>
       <DashboardLayout>
@@ -105,10 +119,11 @@ export default function ProfilePage() {
           <div className={styles.container}>
             <div className={styles.backDropContainer}>
               <div className={styles.backDrop_overlay}>
+               
                 <img
-                  src={`${BASE_URL}/uploads/${userProfile?.userId?.profilePicture}`}
-                  alt="profile"
-                />
+  src={getProfilePic(userProfile?.userId?.profilePicture)}
+  alt="profile"
+/>
                 <label
                   htmlFor="profilePictureUpload"
                   className={styles.editOverlay}
@@ -136,7 +151,7 @@ export default function ProfilePage() {
                       gap: "1.2rem",
                     }}
                   >
-                    {/* <h2>{userProfile?.userId?.name}</h2> */}
+                    
                     <input
                       className={styles.nameEdit}
                       type="text"
@@ -184,8 +199,13 @@ export default function ProfilePage() {
                         <div className={styles.card}>
                           <div className={styles.card_profileContainer}>
                             {post.media !== "" ? (
+                             
                               <img
-                                src={`${BASE_URL}/uploads/${post.media}`}
+                                src={
+                                  post.media?.startsWith("http")
+                                    ? post.media
+                                    : `${BASE_URL}/uploads/${post.media}`
+                                }
                                 alt=""
                               />
                             ) : (

@@ -36,10 +36,14 @@ const postSchema = mongoose.Schema({
   filetype:{
     type:String,
     default:""
-  }
+  },
+
+  toogle:{
+  likes: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // ← add this
+}
 
 });
 
-// const Post = mongoose.model("Post",PostSchema)
-// export default Post;
+
 export default mongoose.model("Post", postSchema);

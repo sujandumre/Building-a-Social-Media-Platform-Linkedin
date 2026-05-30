@@ -49,7 +49,8 @@ router.route("/comments").post(create_comment);
 router.route("/get_comments").post(get_comments_by_post);
 router.route("/delete_comment").post(delete_comment_of_user);
 router.route("/increment_post_likes").post(increment_likes);
-router.route('/user/send_connection_request').post(sendConnectionRequest);
+
+router.route('/send_connection_request').post(sendConnectionRequest);
 
 
 export default router;

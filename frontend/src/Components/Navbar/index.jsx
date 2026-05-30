@@ -3,7 +3,8 @@ import React from 'react'
 import styles from "./styles.module.css"
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
-import { reset } from '@/redux/reducer/authReducer' // 
+import { reset } from '@/redux/reducer/authReducer' 
+import { signOut } from "next-auth/react";
 
 export default function NavBarComponent() {
   const router = useRouter();
@@ -25,17 +26,18 @@ export default function NavBarComponent() {
                 router.push("/profile");
               }} 
               style={{ fontWeight: "bold", cursor: "pointer" }}>Profile</p>
+             
               <p
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  dispatch(reset()); 
-                  router.push("/login");
-                  
-                }}
-                style={{ fontWeight: "bold", cursor: "pointer" }}
-              >
-                Logout
-              </p>
+  onClick={async () => {
+    localStorage.removeItem("token");
+    dispatch(reset());
+    await signOut({ redirect: false }); 
+    router.push("/login");
+  }}
+  style={{ fontWeight: "bold", cursor: "pointer" }}
+>
+  Logout
+</p>
             </div>
           )}
 

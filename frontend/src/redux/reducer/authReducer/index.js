@@ -1,7 +1,7 @@
 
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAboutUser, getAllUsers, getMyconnectionRequests, getConnectionsRequest, loginUser, registerUser } from "../../action/authAction";
+import { getAboutUser, getAllUsers, getMyconnectionRequests, getConnectionsRequest, loginUser, updateProfileData, registerUser } from "../../action/authAction";
 import { AcceptConnection } from "@/redux/action/postAction";
 
 const initialState = {
@@ -130,6 +130,14 @@ const authSlice = createSlice({
 .addCase(AcceptConnection.rejected, (state, action) => {
   state.message = action.payload;
 })
+.addCase(updateProfileData.fulfilled, (state, action) => {
+  state.message = "Profile updated successfully";
+  state.isLoading = false;
+})
+.addCase(updateProfileData.rejected, (state, action) => {
+  state.isLoading = false;
+  state.message = action.payload?.message || "Failed to update profile";
+});
 
   },
  

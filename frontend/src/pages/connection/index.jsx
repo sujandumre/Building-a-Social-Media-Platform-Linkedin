@@ -26,6 +26,21 @@ export default function ConnectionsPage() {
   console.log("AUTH STATE connectionRequest:", authState.connectionRequest);
 }, [authState.connections, authState.connectionRequest]);
 
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  console.log("Token:", token); // ← is token here?
+  if (token) {
+    dispatch(getMyconnectionRequests({ token }))
+      .then((res) => console.log("getMyConnectionRequests result:", res)) // ← check result
+      .catch((err) => console.log("getMyConnectionRequests error:", err));
+      
+    dispatch(getConnectionsRequest({ token }))
+      .then((res) => console.log("getConnectionsRequest result:", res))
+      .catch((err) => console.log("getConnectionsRequest error:", err));
+  }
+}, []);
+
   const router = useRouter();
 
   return (
