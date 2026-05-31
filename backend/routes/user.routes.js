@@ -10,7 +10,7 @@ const router = Router();
 router.post("/login", login);
 router.post("/register", register);
 
-import { storage } from "../config/cloudinary.js";
+
 const upload = multer({ storage });
 
 
