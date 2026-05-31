@@ -26,10 +26,12 @@ app.use(postRoutes);
 app.use(userRoutes);
 app.use("/uploads", express.static("uploads"));
 
+
+
 const start = async () => {
   await mongoose.connect(process.env.MONGO_URI || "mongodb+srv://dumresuman02_db_user:5tdqvDjGjwbzxFps@linkedinclone.vah0xrr.mongodb.net/?appName=linkedinclone");
   const PORT = process.env.PORT || 9090;
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => { // ← add "0.0.0.0"
     console.log(`Server is running on port ${PORT}`);
   });
 };
