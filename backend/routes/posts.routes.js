@@ -1,6 +1,6 @@
 import { Router } from "express";
 import express from "express";
-import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment, sendConnectionRequest} from "../controllers/posts.controller.js";
+import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment, sendConnectionRequest, toggle_like} from "../controllers/posts.controller.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -49,7 +49,7 @@ router.route("/comments").post(create_comment);
 router.route("/get_comments").post(get_comments_by_post);
 router.route("/delete_comment").post(delete_comment_of_user);
 router.route("/increment_post_likes").post(increment_likes);
-
+router.post("/toggle-like", toggle_like);
 router.route('/send_connection_request').post(sendConnectionRequest);
 
 

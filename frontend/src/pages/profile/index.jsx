@@ -35,7 +35,7 @@ export default function ProfilePage() {
     if (pic?.startsWith("http")) return pic;
     return `${BASE_URL}/uploads/${pic}`;
   };
- 
+
   const handleWorkInputChange = (e) => {
     const { name, value } = e.target;
     setInputData({ ...inputData, [name]: value });
@@ -82,20 +82,13 @@ export default function ProfilePage() {
     dispatch(getAboutUser({ token: localStorage.getItem("token") }));
   };
 
- 
-
- 
-
-
   const updateProfileData = async () => {
     try {
-      
       await clientServer.post("/user_update", {
         token: localStorage.getItem("token"),
         name: userProfile.userId?.name,
       });
 
-      
       await clientServer.post("/update_profile_data", {
         token: localStorage.getItem("token"),
         bio: userProfile.bio,
@@ -119,11 +112,10 @@ export default function ProfilePage() {
           <div className={styles.container}>
             <div className={styles.backDropContainer}>
               <div className={styles.backDrop_overlay}>
-               
                 <img
-  src={getProfilePic(userProfile?.userId?.profilePicture)}
-  alt="profile"
-/>
+                  src={getProfilePic(userProfile?.userId?.profilePicture)}
+                  alt="profile"
+                />
                 <label
                   htmlFor="profilePictureUpload"
                   className={styles.editOverlay}
@@ -141,8 +133,8 @@ export default function ProfilePage() {
             </div>
 
             <div className={styles.profileContainer_details}>
-              <div style={{ display: "flex", gap: "0.7rem" }}>
-                <div style={{ flex: "0.8" }}>
+              <div style={{ display: "flex", gap: "0.7rem", flexWrap: "wrap" }}>
+                <div style={{ flex: "1 1 60%" }}>
                   <div
                     style={{
                       display: "flex",
@@ -151,7 +143,6 @@ export default function ProfilePage() {
                       gap: "1.2rem",
                     }}
                   >
-                    
                     <input
                       className={styles.nameEdit}
                       type="text"
@@ -166,9 +157,21 @@ export default function ProfilePage() {
                         });
                       }}
                     />
-                    <p contentEditable style={{ color: "gray" }}>
-                      @{userProfile?.userId?.username}
-                    </p>
+                   
+                    <input
+                      type="text"
+                      value={userProfile?.userId?.username || ""}
+                      onChange={(e) => {
+                        setUserProfile({
+                          ...userProfile,
+                          userId: {
+                            ...userProfile.userId,
+                            username: e.target.value,
+                          },
+                        });
+                      }}
+                      style={{ color: "gray", border: "none", outline: "none" }}
+                    />
                   </div>
 
                   <div
@@ -199,7 +202,6 @@ export default function ProfilePage() {
                         <div className={styles.card}>
                           <div className={styles.card_profileContainer}>
                             {post.media !== "" ? (
-                             
                               <img
                                 src={
                                   post.media?.startsWith("http")
@@ -243,7 +245,7 @@ export default function ProfilePage() {
                     </div>
                   ))
                 ) : (
-                  <p>No work history found</p> 
+                  <p>No work history found</p>
                 )}
               </div>
               <button
@@ -254,9 +256,8 @@ export default function ProfilePage() {
               >
                 Add Work
               </button>
-
             </div>
-             {userProfile != authState.user && (
+            {userProfile != authState.user && (
               <div
                 onClick={updateProfileData}
                 className={styles.updateProfileBtn}
@@ -264,126 +265,143 @@ export default function ProfilePage() {
                 Update Profile
               </div>
             )}
-          {/* </div>
-        )} */}
+           
 
-        {IsModelOpen && (
-          <div
-            onClick={() => {
-              setIsModelOpen(false);
-            }}
-            className={styles.commitContainer}
-          >
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              className={styles.allCommentsContainer}
-            >
-              <input
-                onChange={handleWorkInputChange}
-                name="company"
-                className={styles.inputField}
-                type="text"
-                placeholder="Enter Company"
-              />
-              <input
-                onChange={handleWorkInputChange}
-                name="position"
-                className={styles.inputField}
-                type="text"
-                placeholder="Enter Position"
-              />
-              <input
-                onChange={handleWorkInputChange}
-                name="years"
-                className={styles.inputField}
-                type="number"
-                placeholder="years worked"
-              />
+            {IsModelOpen && (
               <div
                 onClick={() => {
-                  setUserProfile({
-                    ...userProfile,
-                    pastwork: [...userProfile.pastwork, inputData],
-                  });
                   setIsModelOpen(false);
                 }}
-                className={styles.updateProfileBtn}
+                className={styles.commitContainer}
               >
-                Add Work
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className={styles.allCommentsContainer}
+                >
+                  <input
+                    onChange={handleWorkInputChange}
+                    name="company"
+                    className={styles.inputField}
+                    type="text"
+                    placeholder="Enter Company"
+                  />
+                  <input
+                    onChange={handleWorkInputChange}
+                    name="position"
+                    className={styles.inputField}
+                    type="text"
+                    placeholder="Enter Position"
+                  />
+                  <input
+                    onChange={handleWorkInputChange}
+                    name="years"
+                    className={styles.inputField}
+                    type="number"
+                    placeholder="years worked"
+                  />
+                  <div
+                    onClick={() => {
+                      setUserProfile({
+                        ...userProfile,
+                        pastwork: [...userProfile.pastwork, inputData],
+                      });
+                      setIsModelOpen(false);
+                    }}
+                    className={styles.updateProfileBtn}
+                  >
+                    Add Work
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-        
-        
-        <div className="educationHistory">
-          <h4>Education</h4>
-          <div className={styles.EduHistoryContainer}>
+            )}
+
             
 
-            {userProfile.education?.filter(edu => edu.institution || edu.degree || edu.duration).length > 0 ? (
-  userProfile.education
-    .filter(edu => edu.institution || edu.degree || edu.duration)
-    .map((edu, index) => (
-      <div key={index} className={styles.EduHistoryCard}>
-        <p style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.8rem" }}>
-          {edu.institution}
-          {edu.institution && edu.degree ? " - " : ""}
-          {edu.degree}
-        </p>
-        <p>{edu.duration}</p>
-      </div>
-    ))
-) : (
-  <p>No education found</p>
-)}
+            <div className="educationHistory">
+  <h4>Education</h4>
+  <div className={styles.EduHistoryContainer}>
+    {userProfile.education?.filter(
+      (edu) => edu.institution || edu.degree || edu.duration,
+    ).length > 0 ? (
+      userProfile.education
+        .filter((edu) => edu.institution || edu.degree || edu.duration)
+        .map((edu, index) => (
+          <div key={index} className={styles.EduHistoryCard}>
+            <p style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.8rem" }}>
+              {edu.institution}
+              {edu.institution && edu.degree ? " - " : ""}
+              {edu.degree}
+            </p>
+            <p>{edu.duration}</p>
           </div>
-          <button
-            className={styles.addEduButton}
-            onClick={() => {
-              setIsEduModelOpen(true);
-            }}
-          >
-            Add Education
-          </button>
-        
-        {userProfile != authState.user && (
-          <div onClick={updateProfileData} className={styles.updateProfileBtn}>
-            Update Profile
-          </div>
-        )}
-        <div className={styles.allCommentsContainer}>
-              <input
-                onChange={handleEducationInputChange } name='institution'
-                className={styles.inputField}
-                type="text"
-                placeholder="Enter Institution"
-              />
-              <input
-                onChange={handleEducationInputChange } name='degree'
-                className={styles.inputField}
-                type="text"
-                placeholder="Enter Degree"
-              />
-              <input
-                onChange={handleEducationInputChange } name='duration'
-                className={styles.inputField}
-                type="number"
-                placeholder="Enter Duration"
-              />
-               
-               
-              <div onClick={()=> {
-                setUserProfile({...userProfile, education: [...userProfile.education, inputEduData]});
-                setIsEduModelOpen(false);
-              }}className={styles.updateProfileBtn}>Add Education</div>
-            </div>
-        </div>
-        </div>
-        )}
+        ))
+    ) : (
+      <p>No education found</p>
+    )}
+  </div>
 
+  <button
+    className={styles.addEduButton}
+    onClick={() => setIsEduModelOpen(true)}
+  >
+    Add Education
+  </button>
+
+  {userProfile != authState.user && (
+    <div onClick={updateProfileData} className={styles.updateProfileBtn}>
+      Update Profile
+    </div>
+  )}
+
+ 
+  {isEduModelOpen && (
+    <div className={styles.allCommentsContainer}>
+      <input
+        onChange={handleEducationInputChange}
+        name="institution"
+        className={styles.inputField}
+        type="text"
+        placeholder="Enter Institution"
+        value={inputEduData.institution} 
+      />
+      <input
+        onChange={handleEducationInputChange}
+        name="degree"
+        className={styles.inputField}
+        type="text"
+        placeholder="Enter Degree"
+        value={inputEduData.degree} 
+      />
+      <input
+        onChange={handleEducationInputChange}
+        name="duration"
+        className={styles.inputField}
+        type="number"
+        placeholder="Enter Duration"
+        value={inputEduData.duration} 
+      />
+
+      <div
+        onClick={() => {
+          setUserProfile({
+            ...userProfile,
+            education: [...userProfile.education, inputEduData],
+          });
+         
+          setInputEduData({ institution: "", degree: "", duration: "" });
+          setIsEduModelOpen(false); 
+        }}
+        className={styles.updateProfileBtn}
+      >
+        Add Education
+      </div>
+    </div>
+  )}
+</div>
+          </div>
+        )}
       </DashboardLayout>
     </UserLayout>
   );

@@ -35,7 +35,7 @@ export const createPost = createAsyncThunk(
       });
 
       if(response.status === 200) {
-        // return thunkAPI.fulfillWithValue("Post Uploaded")
+       
         return thunkAPI.fulfillWithValue(response.data)
       } else {
         return thunkAPI.rejectWithValue("post not Uploaded")
@@ -70,7 +70,7 @@ export const incrementPostLike = createAsyncThunk(
   async (data, thunkAPI)=> {
     try {
       const response = await clientServer.post(`/increment_post_likes`, {
-        // post_id: post.post_id
+        
         post_id: data.post_id
       })
       return thunkAPI.fulfillWithValue(response.data);
@@ -194,3 +194,18 @@ export const AcceptConnection = createAsyncThunk(
     }
   }
 )
+export const togglePostLike = createAsyncThunk(
+  "post/togglePostLike",
+  async ({ post_id }, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await clientServer.post("/toggle-like", {
+        post_id,
+        token
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);

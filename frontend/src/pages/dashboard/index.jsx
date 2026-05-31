@@ -8,6 +8,7 @@ import {
   createPost,
   deletePost,
   incrementPostLike,
+  togglePostLike,
 } from "@/redux/action/postAction";
 import { getAboutUser, getAllUsers } from "@/redux/action/authAction";
 import UserLayout from "@/layout/UserLayout";
@@ -27,9 +28,9 @@ export default function Dashboard() {
   const [postContent, setPostContent] = useState("");
   const [fileContent, setFileContent] = useState(null);
   const [likedPosts, setLikedPosts] = useState([]);
-const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-const getProfilePic = (pic) => {
+  const getProfilePic = (pic) => {
     if (!pic || pic === "default.jpg") return "/default-avatar.png";
     if (pic?.startsWith("http")) return pic;
     return `${BASE_URL}/uploads/${pic}`;
@@ -118,63 +119,73 @@ const getProfilePic = (pic) => {
       <DashboardLayout>
         <div className={styles.homeComponent}>
           <div className={styles.wrapper}>
-
             <div className={styles.createPostContainer}>
-  <img
-    className={styles.userProfile}
-    src={getProfilePic(authState?.user?.userId?.profilePicture)}
-    alt="your profile"
-  />
-  
-  <textarea
-    onChange={(e) => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setShowLoginPopup(true); 
-        return;
-      }
-      setPostContent(e.target.value);
-    }}
-    value={postContent}
-    placeholder="What's in your mind?"
-    className={styles.textAreaOfContent}
-  />
+              <img
+                className={styles.userProfile}
+                src={getProfilePic(authState?.user?.userId?.profilePicture)}
+                alt="your profile"
+              />
 
-  <label htmlFor="fileUpload">
-    <div className={styles.Fab}>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-        strokeWidth={1.5} stroke="currentColor" className="size-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-    </div>
-  </label>
+              <textarea
+                onChange={(e) => {
+                  const token = localStorage.getItem("token");
+                  if (!token) {
+                    setShowLoginPopup(true);
+                    return;
+                  }
+                  setPostContent(e.target.value);
+                }}
+                value={postContent}
+                placeholder="What's in your mind?"
+                className={styles.textAreaOfContent}
+              />
 
-  <input
-    onChange={(e) => setFileContent(e.target.files[0])}
-    type="file" hidden id="fileUpload"
-  />
+              <label htmlFor="fileUpload">
+                <div className={styles.Fab}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </div>
+              </label>
 
-  {postContent.length > 0 && (
-    <div
-      onClick={() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setShowLoginPopup(true); 
-          return;
-        }
-        handleUpload(); 
-      }}
-      className={styles.uploadButton}
-    >
-      Post
-    </div>
-  )}
-</div>
+              <input
+                onChange={(e) => setFileContent(e.target.files[0])}
+                type="file"
+                hidden
+                id="fileUpload"
+              />
 
-{/* ← add popup at bottom of return */}
-{showLoginPopup && (
-  <LoginPopup onClose={() => setShowLoginPopup(false)} />
-)}
+              {postContent.length > 0 && (
+                <div
+                  onClick={() => {
+                    const token = localStorage.getItem("token");
+                    if (!token) {
+                      setShowLoginPopup(true);
+                      return;
+                    }
+                    handleUpload();
+                  }}
+                  className={styles.uploadButton}
+                >
+                  Post
+                </div>
+              )}
+            </div>
+
+            {showLoginPopup && (
+              <LoginPopup onClose={() => setShowLoginPopup(false)} />
+            )}
 
             {/* ── Posts List ── */}
             <div className={styles.postsContainer}>
@@ -258,24 +269,42 @@ const getProfilePic = (pic) => {
                       {/* ── Post Actions ── */}
                       <div className={styles.optionsContainer}>
                         {/* Like */}
-                       
-                         <div
+
+                        <div
                           onClick={async () => {
-                            await dispatch(
-                              incrementPostLike({ post_id: post._id }),
-                            );
+                            const alreadyLiked = likedPosts.includes(post._id);
+
+                            if (alreadyLiked) {
+                              setLikedPosts(
+                                likedPosts.filter((id) => id !== post._id),
+                              );
+                              await dispatch(
+                                togglePostLike({ post_id: post._id }),
+                              );
+                            } else {
+                              setLikedPosts([...likedPosts, post._id]);
+                              await dispatch(
+                                togglePostLike({ post_id: post._id }),
+                              );
+                            }
                             dispatch(getAllPosts());
                           }}
                           className={styles.singleOption_optionsContainer}
                         >
-
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
+                            fill={
+                              likedPosts.includes(post._id) ? "blue" : "none"
+                            } // ← fill changes
                             viewBox="0 0 24 24"
                             strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="size-6"
+                            stroke={
+                              likedPosts.includes(post._id)
+                                ? "blue"
+                                : "currentColor"
+                            } // ← stroke changes
+                            width="24"
+                            height="24"
                           >
                             <path
                               strokeLinecap="round"
@@ -338,7 +367,6 @@ const getProfilePic = (pic) => {
                         </div>
                       </div>
 
-                      
                       {openCommentPostId === post._id && (
                         <div className={styles.commentsSection}>
                           {/* Comment count header */}
@@ -368,16 +396,17 @@ const getProfilePic = (pic) => {
                                 key={comment._id}
                                 className={styles.singleComment}
                               >
-                                
                                 <img
-  src={
-    userProfile?.profile_pic?.startsWith("http") 
-      ? userProfile?.profile_pic  
-      : `${BASE_URL}/uploads/${userProfile?.profile_pic || "default.jpg"}` 
-  }
-  alt="profile"
-  onError={(e) => e.target.src = "/default-avatar.png"} 
-/>
+                                  src={
+                                    userProfile?.profile_pic?.startsWith("http")
+                                      ? userProfile?.profile_pic
+                                      : `${BASE_URL}/uploads/${userProfile?.profile_pic || "default.jpg"}`
+                                  }
+                                  alt="profile"
+                                  onError={(e) =>
+                                    (e.target.src = "/default-avatar.png")
+                                  }
+                                />
                                 <div className={styles.commentMeta}>
                                   <div
                                     style={{
@@ -435,7 +464,6 @@ const getProfilePic = (pic) => {
                             );
                           })}
 
-                          
                           <div className={styles.commentForm}>
                             <textarea
                               className={styles.commentTextarea}

@@ -38,10 +38,9 @@ const postSchema = mongoose.Schema({
     default:""
   },
 
-  toogle:{
-  likes: { type: Number, default: 0 },
-  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // ← add this
-}
+
+likes: { type: Number, default: 0 },
+likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 
 });
 

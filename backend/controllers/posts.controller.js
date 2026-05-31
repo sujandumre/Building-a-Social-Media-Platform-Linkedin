@@ -232,3 +232,28 @@ export const sendConnectionRequest = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const toggle_like = async (req, res) => {
+  const { post_id, token } = req.body;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const post = await Post.findById(post_id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const alreadyLiked = post.likedBy?.includes(decoded.id);
+
+    if (alreadyLiked) {
+      post.likedBy = post.likedBy.filter((id) => id.toString() !== decoded.id);
+      post.likes = Math.max(0, post.likes - 1);
+    } else {
+      post.likedBy.push(decoded.id);
+      post.likes = post.likes + 1;
+    }
+
+    await post.save();
+    return res.json({ message: alreadyLiked ? "Unliked" : "Liked", likes: post.likes });
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
