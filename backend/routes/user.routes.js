@@ -11,8 +11,6 @@ router.post("/login", login);
 router.post("/register", register);
 
 
-const upload = multer({ storage });
-
 
 
 
