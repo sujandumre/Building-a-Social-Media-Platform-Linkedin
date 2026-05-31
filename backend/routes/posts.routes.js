@@ -3,7 +3,7 @@ import express from "express";
 import { activeCheck, createPost, getAllPosts, deletePost, increment_likes, delete_comment_of_user, get_comments_by_post, create_comment, sendConnectionRequest, toggle_like} from "../controllers/posts.controller.js";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
+// import fs from "fs";
 
 
 const router = Router();
@@ -13,24 +13,15 @@ const app = express();
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + ".jpg"); 
-  }
-});
-
+import { storage } from "../config/cloudinary.js";
 export const upload = multer({ storage });
 
 
-const uploadPath = "uploads/";
+// const uploadPath = "uploads/";
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+// if (!fs.existsSync(uploadPath)) {
+//   fs.mkdirSync(uploadPath, { recursive: true });
+// }
 
 router.get("/", activeCheck);
 

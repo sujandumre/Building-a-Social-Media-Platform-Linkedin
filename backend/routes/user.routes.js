@@ -3,26 +3,18 @@ import { login, register } from "../controllers/user.controller.js";
 import multer from "multer";
 import jwt from "jsonwebtoken";
 import { uploadProfilePicture,updateUserprofile,getUserAndProfile,updateProfileData,getAllUserProfile , acceptConnectionRequest, whatAreMyConnections, getMyConnectionRequests, downloadProfile, googleLogin,getConnectionRequests , getUserProfileAndUserbasedOnUsername  } from "../controllers/user.controller.js";
+import { storage } from "../config/cloudinary.js";
 
-
-
+const upload = multer({ storage });
 const router = Router();
 router.post("/login", login);
 router.post("/register", register);
 
-const storage = multer.diskStorage({
-  destination:(req,file,cb)=>{
-    cb(null,"uploads/");
-
-  },
-  filename:(req,file,cb)=>{
-    cb(null,file.originalname);
-  }
-})
+import { storage } from "../config/cloudinary.js";
+const upload = multer({ storage });
 
 
 
-const upload = multer({storage:storage});
 
 router.route('/update_profile_picture')
 .post(upload.single("profile_picture"), uploadProfilePicture);
