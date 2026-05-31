@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import LoginPopup from "@/components/LoginPopup";
+import LoginPopup from "@/Components/LoginPopup";
 import {
   getAllComments,
   getAllPosts,
