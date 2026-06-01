@@ -57,12 +57,18 @@ export const createPost = async (req, res) => {
     const user = await User.findById(decoded.id); // ← find by id
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // const post = new Post({
+    //   userId: user._id,
+    //   body: body || "",
+    //   media: req.file ? req.file.filename : "",
+    //   fileType: req.file ? req.file.mimetype.split("/")[1] : "",
+    // });
     const post = new Post({
-      userId: user._id,
-      body: body || "",
-      media: req.file ? req.file.filename : "",
-      fileType: req.file ? req.file.mimetype.split("/")[1] : "",
-    });
+  userId: user._id,
+  body: body || "",
+  media: req.file ? req.file.path : "",  // ← change filename to path
+  fileType: req.file ? req.file.mimetype.split("/")[1] : "",
+});
 
     const savedPost = await post.save();
 
