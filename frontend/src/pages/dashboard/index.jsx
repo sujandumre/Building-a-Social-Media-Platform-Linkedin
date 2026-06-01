@@ -396,11 +396,24 @@ export default function Dashboard() {
                                 key={comment._id}
                                 className={styles.singleComment}
                               >
-                                <img
+                                {/* <img
                                   src={
                                     userProfile?.profile_pic?.startsWith("http")
                                       ? userProfile?.profile_pic
                                       : `${BASE_URL}/uploads/${userProfile?.profile_pic || "default.jpg"}`
+                                  }
+                                  alt="profile"
+                                  onError={(e) =>
+                                    (e.target.src = "/default-avatar.png")
+                                  }
+                                /> */}
+                                <img
+                                  src={
+                                    comment.userId?.profilePicture?.startsWith(
+                                      "http",
+                                    )
+                                      ? comment.userId?.profilePicture
+                                      : `${BASE_URL}/uploads/${comment.userId?.profilePicture || "default.jpg"}`
                                   }
                                   alt="profile"
                                   onError={(e) =>
