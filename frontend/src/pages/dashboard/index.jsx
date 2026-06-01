@@ -257,14 +257,27 @@ export default function Dashboard() {
                       <p style={{ color: "gray" }}>@{post.userId?.username}</p>
                       <p style={{ paddingTop: "1.3rem" }}>{post.body}</p>
 
-                      {post.media && (
+                      {/* {post.media && (
                         <div className={styles.singleCard_image}>
                           <img
                             src={`${BASE_URL}/uploads/${post.media}`}
                             alt="post media"
                           />
                         </div>
-                      )}
+                      )} */}
+
+                      {post.media && post.media !== "" && (
+  <img
+    src={
+      post.media?.startsWith("http")
+        ? post.media  // ← Cloudinary URL
+        : `${BASE_URL}/uploads/${post.media}` // ← old local path
+    }
+    alt="post media"
+    style={{ width: "100%", borderRadius: "10px" }}
+  />
+)}
+
 
                       {/* ── Post Actions ── */}
                       <div className={styles.optionsContainer}>
