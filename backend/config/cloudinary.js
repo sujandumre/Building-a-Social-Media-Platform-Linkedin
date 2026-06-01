@@ -7,11 +7,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// export const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: {
+//     folder: "linkedin-clone",
+//     allowed_formats: ["jpg", "png", "jpeg"],
+//   },
+// });
+
+
 export const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "linkedin-clone",
     allowed_formats: ["jpg", "png", "jpeg"],
+    resource_type: "auto",
   },
 });
 
