@@ -12,15 +12,15 @@ export default NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       try {
-        const response = await fetch(`http://localhost:9090/google-login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: user.name,
-            email: user.email,
-            profile_pic: user.image,
-          }),
-        });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/google-login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name: user.name,
+    email: user.email,
+    profile_pic: user.image,
+  }),
+});
 
         const data = await response.json();
         console.log("Backend response:", data); // ← check frontend terminal
