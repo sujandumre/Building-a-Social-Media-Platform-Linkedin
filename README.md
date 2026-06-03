@@ -50,7 +50,8 @@ CLOUDINARY_API_SECRET=
 👨‍💻 Author
 Sujan Dumre
 
-GitHub: @sujandumre
-LinkedIn: Sujan Dumre
+**Sujan Dumre**
+- GitHub: [@sujandumre](https://github.com/sujandumre)
+- LinkedIn: [Sujan Dumre](https://www.linkedin.com/in/sujandumre)
 
 
