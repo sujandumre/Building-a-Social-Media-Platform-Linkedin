@@ -52,6 +52,6 @@ Sujan Dumre
 
 **Sujan Dumre**
 - GitHub: [@sujandumre](https://github.com/sujandumre)
-- LinkedIn: [Sujan Dumre](https://www.linkedin.com/in/sujandumre)
+- LinkedIn: [Sujan Dumre](https://www.linkedin.com/in/dumresujan/?skipRedirect=true)
 
 
