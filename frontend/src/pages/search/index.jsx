@@ -13,6 +13,16 @@ export default function SearchPage() {
   const authState = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+
+  const getProfilePic = (pic) => {
+  if (!pic || pic === "default.jpg") return "/default-avatar.png";
+  if (pic?.startsWith("http")) return pic;
+  if (pic?.startsWith("linkedin-clone/")) {
+    return `https://res.cloudinary.com/dcbdckji6/image/upload/${pic}`;
+  }
+  return `${BASE_URL}/uploads/${pic}`;
+};
+
   useEffect(() => {
     dispatch(getAllUsers()); 
   }, []);
@@ -33,14 +43,15 @@ export default function SearchPage() {
             <div 
             onClick={() => router.push(`/view_profile/${profile.userId?.username}`)} 
              key={profile._id} className={styles.userProfile}>
-              <img
+              {/* <img
                 src={
                   profile.userId?.profilePicture
                     ? `${BASE_URL}/uploads/${profile.userId.profilePicture}`
                     : "/default1.png"
                 }
                 alt="profile"
-              />
+              /> */}
+              <img src={getProfilePic(profile?.profile_pic)} alt="" />
               <h1>{profile.userId?.name}</h1>
               
               <p>@{profile.userId?.username}</p>
