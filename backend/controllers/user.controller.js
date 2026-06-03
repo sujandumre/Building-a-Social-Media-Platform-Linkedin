@@ -207,7 +207,23 @@ export const whatAreMyConnections = async (req,res) =>{
   }
 }
 
-// uploadProfilePicture
+// // uploadProfilePicture
+// export const uploadProfilePicture = async (req, res) => {
+//   const { token } = req.body;
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await User.findById(decoded.id);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     user.profilePicture = req.file.filename;
+//     await user.save();
+
+//     return res.json({ message: "Profile picture updated successfully" });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const uploadProfilePicture = async (req, res) => {
   const { token } = req.body;
   try {
@@ -215,8 +231,14 @@ export const uploadProfilePicture = async (req, res) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.profilePicture = req.file.filename;
+    user.profilePicture = req.file.path; // ← fix: path gives full Cloudinary URL
     await user.save();
+
+    // ← also update profile collection
+    await Profile.findOneAndUpdate(
+      { userId: decoded.id },
+      { profile_pic: req.file.path }
+    );
 
     return res.json({ message: "Profile picture updated successfully" });
   } catch (error) {
