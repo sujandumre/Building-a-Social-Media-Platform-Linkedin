@@ -27,3 +27,26 @@ cd frontend && npm install && npm run dev
 
 ## Environment Variables
 Create `.env` in backend and `.env.local` in frontend — see `.env.example` for required variables.
+
+##Frontend
+NEXT_PUBLIC_API_URL=
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+#Backend
+PORT=
+MONGO_URI=
+JWT_SECRET=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+👨‍💻 Author
+Sujan Dumre
+
+GitHub: @sujandumre
+LinkedIn: Sujan Dumre
+
+
