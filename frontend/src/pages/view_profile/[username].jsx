@@ -36,6 +36,15 @@ export default function ViewProfilePage({ userProfile }) {
     }
   };
 
+  const getProfilePic = (pic) => {
+  if (!pic || pic === "default.jpg") return "/default-avatar.png";
+  if (pic?.startsWith("http")) return pic; // ← full URL
+  if (pic?.startsWith("linkedin-clone/")) { // ← Cloudinary public ID
+    return `https://res.cloudinary.com/dcbdckji6/image/upload/${pic}`;
+  }
+  return `${BASE_URL}/uploads/${pic}`; // ← local upload
+};
+
   useEffect(() => {
     console.log("full redux state:", postReducer);
   }, [postReducer]);
