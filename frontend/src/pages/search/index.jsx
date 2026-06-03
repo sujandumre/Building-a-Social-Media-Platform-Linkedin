@@ -43,15 +43,15 @@ export default function SearchPage() {
             <div 
             onClick={() => router.push(`/view_profile/${profile.userId?.username}`)} 
              key={profile._id} className={styles.userProfile}>
-              {/* <img
+              <img
                 src={
                   profile.userId?.profilePicture
                     ? `${BASE_URL}/uploads/${profile.userId.profilePicture}`
                     : "/default1.png"
                 }
                 alt="profile"
-              /> */}
-              <img src={getProfilePic(profile?.profile_pic)} alt="" />
+              />
+              {/* <img src={getProfilePic(profile?.profile_pic)} alt="" /> */}
               <h1>{profile.userId?.name}</h1>
               
               <p>@{profile.userId?.username}</p>
