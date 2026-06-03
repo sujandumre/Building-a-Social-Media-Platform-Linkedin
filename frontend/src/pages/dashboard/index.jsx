@@ -208,12 +208,14 @@ const getProfilePic = (pic) => {
                     {/* Post header */}
                     <img
                       className={styles.userProfile}
-                      src={
-                        getProfilePic(post.userId?.profilePicture)
-                          ? `${BASE_URL}/uploads/${post.userId.profilePicture}`
-                          : "/default1.png"
-                      }
-                      alt="profile"
+                      // src={
+                        // getProfilePic(post.userId?.profilePicture)
+                        //   ? `${BASE_URL}/uploads/${post.userId.profilePicture}`
+                        //   : "/default1.png"
+                        src={getProfilePic(post.userId?.profilePicture)}
+  alt="profile"
+                      // }
+                      
                     />
                     <div>
                       <div
