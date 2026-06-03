@@ -42,12 +42,13 @@ useEffect(() => {
 }, []);
 
 const getProfilePic = (pic) => {
-  if (!pic || pic === "default.jpg") return "/default-avatar.png";
-  if (pic?.startsWith("http")) return pic; // ← full URL
-  if (pic?.startsWith("linkedin-clone/")) { // ← Cloudinary public ID
+  if (!pic || pic === "default.jpg" || pic === "profile" || pic === "") 
+    return "/default-avatar.png"; // ← add "profile" check
+  if (pic?.startsWith("http")) return pic;
+  if (pic?.startsWith("linkedin-clone/")) {
     return `https://res.cloudinary.com/dcbdckji6/image/upload/${pic}`;
   }
-  return `${BASE_URL}/uploads/${pic}`; // ← local upload
+  return `${BASE_URL}/uploads/${pic}`;
 };
 
   const router = useRouter();
