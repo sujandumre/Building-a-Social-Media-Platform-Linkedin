@@ -41,9 +41,18 @@ useEffect(() => {
   }
 }, []);
 
+// const getProfilePic = (pic) => {
+//   if (!pic || pic === "default.jpg" || pic === "profile" || pic === "") 
+//     return "/default-avatar.png"; // ← add "profile" check
+//   if (pic?.startsWith("http")) return pic;
+//   if (pic?.startsWith("linkedin-clone/")) {
+//     return `https://res.cloudinary.com/dcbdckji6/image/upload/${pic}`;
+//   }
+//   return `${BASE_URL}/uploads/${pic}`;
+// };
+
 const getProfilePic = (pic) => {
-  if (!pic || pic === "default.jpg" || pic === "profile" || pic === "") 
-    return "/default-avatar.png"; // ← add "profile" check
+  if (!pic || pic === "default.jpg" || pic === "profile" || pic === "") return "/default-avatar.png";
   if (pic?.startsWith("http")) return pic;
   if (pic?.startsWith("linkedin-clone/")) {
     return `https://res.cloudinary.com/dcbdckji6/image/upload/${pic}`;
@@ -89,7 +98,8 @@ const getProfilePic = (pic) => {
                 >
                   <div className={styles.profilePicture}>
                     <img
-                      src={`${BASE_URL}/uploads/${user?.profilePicture ?? "default.jpg"}`}
+                      // src={`${BASE_URL}/uploads/${user?.profilePicture ?? "default.jpg"}`}
+                      src={getProfilePic(user?.profilePicture)}  
                       alt={user?.name ?? "User"}
                       style={{
                         width: "100%",
@@ -140,7 +150,7 @@ const getProfilePic = (pic) => {
         <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
           <div className={styles.profilePicture}>
             <img
-              src={`${BASE_URL}/uploads/${user?.profilePicture ?? user?.connection?.profilePicture ?? "default.jpg"}`}
+              src={getProfilePic(user?.profilePicture || user?.connection?.profilePicture)}
               alt={user?.name ?? "User"}
               style={{ width: "100%", height: "100%", borderRadius: "50%" }}
             />

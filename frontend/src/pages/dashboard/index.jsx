@@ -209,7 +209,7 @@ const getProfilePic = (pic) => {
                     <img
                       className={styles.userProfile}
                       src={
-                        post.userId?.profilePicture
+                        getProfilePic(post.userId?.profilePicture)
                           ? `${BASE_URL}/uploads/${post.userId.profilePicture}`
                           : "/default1.png"
                       }
